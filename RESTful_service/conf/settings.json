@@ -1,0 +1,33 @@
+{
+  "mappings": [
+    {"name":  "HPO mapping", "file": "./mappings/hpo-umls-mapping.json"},
+    {"name":  "Eye HPO mapping", "file": "./mappings/eye-hpo-umls-mapping.json"}
+  ],
+  "mappings_dir": "./mappings_dir",
+  "transaction_dir": "./transactions",
+  "training_dir": "./training",
+  "passphrase": "^dr,rjt^",
+  "webdata_path": "/Users/honghan.wu/Documents/working/SemEHR-Working/working_dermatology",
+  "MRREL_path": "../umls/MRREL.csv",
+  "MRCONSO_path": "../umls/MRCONSO.csv",
+  "databaseBackend": "postgreSQL",
+  "mongoDB": {
+    "host": "localhost",
+    "user": "semehr",
+    "password": "semehr",
+    "db": "semehr",
+    "auth_source": "admin",
+    "ann_collection": "semehr_results",
+    "text_collection": "text_collection"
+  },
+  "postgreSQL": {
+    "host": "localhost",
+    "user": "semehrapi",
+    "password": "@awnwge@",
+    "db": "semehr",
+    "schema": "semehr",
+    "ann_collection": "semehr_results",
+    "text_collection": "text_collection",
+    "umls_csv_dir": "../umls"
+  }
+}

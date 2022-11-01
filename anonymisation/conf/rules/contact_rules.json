@@ -1,0 +1,309 @@
+{
+  "PHI_rules": {
+
+    "phone": [
+      {
+        "pattern": " {0,}(telephone|phone|tel no|Fax No|Fax number|Appointments|Facsimile|fax|tel|bleep)\\.{0,1}\\s{0,1}\\:{0,1}\\s+((\\d{2,}( |\\-){0,1}){1,}).*",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "label",
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "pattern": "tel(\\d+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "pattern": "(?:bleep|paged|pager)(?:\\:){0,1}\\s+(\\w+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "pattern": "((secretary to|reception)[^\\d]+((\\d{2,}( |\\-){0,1}){1,}))",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "full",
+          "label",
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "phone number XXXXX XXXXXXX spaces optional",
+        "pattern": "(\\d{5}[ -]{0,}\\d{6})",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "phone number XXXX XXX XXXX spaces optional",
+        "pattern": "(\\d{4}[ -]{0,}\\d{3}[ -]{0,}\\d{4})",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "phone with area code in brackets",
+        "pattern": "(\\(\\d+\\) {0,}\\d{2,}( |\\-){0,}\\d{2,})",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "pattern": "extension\\s+([\\d\\/]+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "exactly 11 digits starting with 07, no spaces (mobile)",
+        "pattern": "\\b(07\\d{9})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "exactly 11 digits starting with 01, no spaces (landline)",
+        "pattern": "\\b(01\\d{9})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "comment": "exactly 11 digits starting with 0 but any number of spaces after first 2 digits",
+        "pattern": "\\b0[0-9]([0-9][ ]{0,}){8}[0-9]\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      },
+      {
+        "pattern": "^\\s{0,}(\\d[\\d\\s]+)\\Z",
+        "flags": [
+          "ignorecase",
+          "multiline"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      }
+    ],
+    "email":[
+      {
+        "pattern": "\\b([^@\\s]+@[^@\\s]+)\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "email"
+      }
+    ],
+    "date": [
+      {
+        "pattern": "^\\s{0,}((20|19)\\d{2,}([\\d\\.]+))$",
+        "flags": [
+          "ignorecase",
+          "multiline"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "(\\d{1,2}\\:\\d{1,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "\\bat\\s+(\\d{4})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "\\bon\\s+(\\d{1,2}/\\d{1,2})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "\\b((?:20|19)\\d{2})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "(\\d{1,4}(/|\\.|\\-)\\d{1,2}(/|\\.|\\-)\\d{2,4})",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      },
+      {
+        "pattern": "\\b((\\d{1,4}(th|nd|st){0,1}\\s+(of\\s+){0,1}){0,1}(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec)(\\s+\\d{2,4}){0,1})\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "date"
+      }
+    ],
+    "address": [
+      {
+        "OLDpattern": "([^\\n]{0,}(([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\\s?(?![0-9]mm)[0-9][A-Za-z]{2})))",
+        "pattern": "([^\\n]{0,}\\b(((([A-PR-UWYZ][A-HK-Y]?[0-9][0-9]?)|(([A-PR-UWYZ][0-9][A-HJKSTUW])|([A-PR-UWYZ][A-HK-Y][0-9][ABEHMNPRV-Y]))) {0,1}(?![0-9]mm)[0-9][ABD-HJLNP-UW-Z]{2})))",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name",
+          "partial",
+          "postcode"
+        ],
+        "data_type": "address postcode line",
+        "disabled": false
+      },
+      {
+        "OLDpattern": "((.*\\n){3}[^\\n]{0,}^(([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\\s?(?![0-9]mm)[0-9][A-Za-z]{2}))$)",
+        "pattern": "((.*\\n){3}[^\\n]{0,}^(((([A-PR-UWYZ][A-HK-Y]?[0-9][0-9]?)|(([A-PR-UWYZ][0-9][A-HJKSTUW])|([A-PR-UWYZ][A-HK-Y][0-9][ABEHMNPRV-Y]))) {0,1}(?![0-9]mm)[0-9][ABD-HJLNP-UW-Z]{2}))$)",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name",
+          "partial",
+          "postcode"
+        ],
+        "data_type": "address 3 lines",
+        "disabled": false
+      },
+      {
+        "pattern": "(((flat|room)[^\\n]+){0,}\\d{1,}[^\\n]+(([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\\s?[0-9][A-Za-z]{2})))",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name",
+          "partial",
+          "postcode"
+        ],
+        "data_type": "address",
+        "disabled": true
+      },
+      {
+        "pattern": "address: {0,}([^\\n\\.]+)",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "address"
+      },
+      {
+        "pattern": "\\blive(s|d){0,1} in (([^\\s]*))\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "partial",
+          "name"
+        ],
+        "data_type": "address"
+      },
+      {
+        "pattern": "\\bhome in (([^\\s]*))\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "partial",
+          "name"
+        ],
+        "data_type": "address"
+      }
+    ]
+  }
+}

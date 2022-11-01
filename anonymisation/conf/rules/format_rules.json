@@ -1,0 +1,17 @@
+{
+  "PHI_rules": {
+    "headers": [
+      {
+        "pattern": " {5,}([A-Z]{2}\\-\\d{2}\\-\\d{7,}) {5,}.* {5,}.* {5,}(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "id",
+          "name"
+        ],
+        "data_type": "assistant"
+      }
+    ]
+  }
+}

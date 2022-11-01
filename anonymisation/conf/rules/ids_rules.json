@@ -1,0 +1,149 @@
+{
+  "PHI_rules": {
+    "studies": [
+      {
+        "pattern": "for\\s+((\\w+)(\\s+\\w+){0,2}\\s+(study|trial))",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "study|trials"
+      }
+    ],
+    "NO.": [
+      {
+        "pattern": "(No\\.)\\:{0,}\\s{0,}(\\d+)\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "NO."
+      }
+    ],
+    "medica": [
+      {
+        "pattern": "(\\s+(medic|stobhill|Thailand|medica reporting ltd|RADAR Alzheimer's|RIE)\\s+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "dict_terms"
+      },
+      {
+        "pattern": "(\\s+(medica|medica healthcare ltd|medica insights|medica insight)\\s+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "dict_terms"
+      }
+    ],
+    "ward": [
+      {
+        "pattern": "\\b(location)\\: {0,}(.*)$",
+        "flags": [
+          "ignorecase",
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "ward"
+      },
+      {
+        "pattern": "\\b(ward\\s+([\\w]+))",
+        "flags": [
+          "ignorecase",
+          "multiline"
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "ward"
+      }
+    ],
+    "CHI": [
+      {
+        "pattern": "(CHI NUMBER)\\: {0,}(\\d+)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "CHI"
+      },
+      {
+        "comment": "exactly 10 digits, no spaces",
+        "pattern": "\\b(\\d{10})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "number"
+        ],
+        "data_type": "phone"
+      }
+    ],
+    "IDs": [
+      {
+        "pattern": "\\b(ID)\\:{0,}\\s{0,}(\\d+)\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "ID"
+      },
+      {
+        "pattern": "(\\d+)\\s+\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "ID"
+      }
+    ],
+    "HCPC": [
+      {
+        "pattern": "(HCPC)[\\s#]{0,}(?:\\:|\\-){0,}\\s{0,}([A-Z][A-Z]\\d+)",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "HCPC"
+      }
+    ],
+    "GMC": [
+      {
+        "pattern": "(GMC|GMC number|GMC No:)[\\s#]{0,}(?:\\:|\\-){0,}\\s{0,}(\\d+)",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "GMC"
+      }
+    ]
+  }
+}

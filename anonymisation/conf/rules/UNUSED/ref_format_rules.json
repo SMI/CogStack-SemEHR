@@ -1,0 +1,76 @@
+{
+  "PHI_rules": {
+    "doc_rule": [
+      {
+        "pattern": "# Image Reference\\n(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "# Document Title Modifier(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "# Ultrasound Measurements(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "ÎÎÎÎÎÎÎ(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "(Freigabezeitpunkt|Beschreibung|Radiologie Wittlich)(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "# Language of Content Item and Descendants(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      },
+      {
+        "pattern": "# Device Observer UID(.*)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "SKIPDOC"
+        ],
+        "data_type": "blob"
+      }
+    ]
+  }
+}

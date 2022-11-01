@@ -1,0 +1,9 @@
+hashlib
+http.server
+joblib
+psycopg2
+pymongo
+re2
+spacy
+urllib.request
+urllib3

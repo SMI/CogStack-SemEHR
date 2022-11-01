@@ -1,0 +1,16 @@
+{
+  "mode": "mt",
+  "number_threads": 0,
+  "rules_folder": "./conf/rules/",
+  "rule_file_pattern": ".*_rules.json$",
+  "rule_group_name": "PHI_rules",
+  "working_fields": ["Finding", "Text", "ContentSequence"],
+  "sensitive_fields": ["Patient ID", "Patient Name", "Person Observer Name", "Referring Physician Name"],
+  "annotation_mode": false,
+  "text_data_path": "/Users/honghan.wu/Documents/working/SemEHR-Working/working_dermatology/referral_data/3rd_batch/input_docs",
+  "anonymisation_output": "/Users/honghan.wu/Documents/working/SemEHR-Working/working_dermatology/referral_data/3rd_batch/anonymised",
+  "extracted_phi": "./test_output/extracted_phi.json",
+  "grouped_phi_output": "./test_output/grouped_phi.txt",
+  "logging_level": "DEBUG",
+  "logging_file": "./test_output/anonymisation.log"
+}

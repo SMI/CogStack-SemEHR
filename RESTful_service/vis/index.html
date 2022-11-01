@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Structured Report Query Interface | SemEHR</title>
+</head>
+<link type="text/css" href="css/text-render.css" rel="stylesheet"/>
+<link type="text/css" href="css/jquery.dataTables-1.10.22.css" rel="stylesheet"/> <!-- https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css -->
+<link type="text/css" href="css/jquery-ui.css" rel="stylesheet">   <!-- https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css -->
+<script src="./js/jquery.min-3.1.0.js"></script>          <!-- https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js -->
+<script src="./js/jquery.dataTables-1.10.22.js"></script> <!-- https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js -->
+<script src="./js/api.js"></script>
+<script src="./js/vis.js"></script>
+<script src="./js/jquery.csv.js"></script>       <!-- https://raw.githubusercontent.com/evanplaice/jquery-csv/main/src/jquery.csv.js -->
+<script src="./js/jquery-ui.js"></script>        <!-- https://code.jquery.com/ui/1.12.1/jquery-ui.js -->
+<script src="./js/forge-sha256.min.js"></script> <!-- https://raw.githubusercontent.com/brillout/forge-sha256/master/build/forge-sha256.min.js -->
+<body>
+<div class="semehr">Structured Report Query Interface | KLAnnotation/SemEHR</div>
+
+<form-not-needed name="searchForm" id="searchForm">
+    <div class="searchDiv">
+        Search <input type="radio" id="docType" name="searchType" value="docs"/> <label for="docType">Document contents</label> <input type="radio" id="annType" name="searchType" value="anns" checked/> <label for="annType">Annotation contents</label> <p/>
+
+        <div class="searchBoxDiv">
+            <div>
+                <input id="klsearch" disabled placeholder="search documents or annotations"/>
+            </div>
+
+            <div>
+                <label for="negationOption" class="formbuilder-select-label">Mention is negated</label>
+                <select class="form-control" name="negationOption" id="negationOption">
+                    <option value="Any" selected="true" id="negationOption-0">Any</option>
+                    <option value="Affirmed" id="negationOption-1">Affirmed</option>
+                    <option value="Negated" id="negationOption-2">Negated</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="experiencerOption" class="formbuilder-select-label">Experiencer</label>
+                <select class="form-control" name="experiencerOption" id="experiencerOption">
+                    <option value="Any" selected="true" id="experiencerOption-0">Any</option>
+                    <option value="Patient" id="experiencerOption-1">Patient</option>
+                    <option value="Other" id="experiencerOption-2">Other</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="temporalityOption" class="formbuilder-select-label">Temporality</label>
+                <select class="form-control" name="temporalityOption" id="temporalityOption">
+                    <option value="Any" selected="true" id="temporalityOption-0">Any</option>
+                    <option value="Recent" id="temporalityOption-1">Recent</option>
+                    <option value="historical" id="temporalityOption-2">historical</option>
+                    <option value="hypothetical" id="temporalityOption-3">hypothetical</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="semanticTypeOption" class="formbuilder-select-label">Semantic Type</label>
+                <select class="form-control" name="semanticTypeOption" id="semanticTypeOption">
+                    <option value="Any" selected="true" id="semanticTypeOption-0">Any</option>
+                    <option value="Acquired Abnormality" id="semanticTypeOption-1">Acquired Abnormality</option>
+                    <option value="Anatomical Abnormality" id="semanticTypeOption-2">Anatomical Abnormality</option>
+                    <option value="Anatomical Abnormality,Disease or Syndrome" id="semanticTypeOption-3">Anatomical Abnormality,Disease or Syndrome</option>
+                    <option value="Anatomical Structure" id="semanticTypeOption-4">Anatomical Structure</option>
+                    <option value="Antibiotic" id="semanticTypeOption-5">Antibiotic</option>
+                    <option value="Body Location or Region" id="semanticTypeOption-6">Body Location or Region</option>
+                    <option value="Body Part, Organ, or Organ Component" id="semanticTypeOption-7">Body Part, Organ, or Organ Component</option>
+                    <option value="Body Space or Junction" id="semanticTypeOption-8">Body Space or Junction</option>
+                    <option value="Body System" id="semanticTypeOption-9">Body System</option>
+                    <option value="Cell or Molecular Dysfunction" id="semanticTypeOption-10">Cell or Molecular Dysfunction</option>
+                    <option value="Clinical Attribute" id="semanticTypeOption-11">Clinical Attribute</option>
+                    <option value="Clinical Drug" id="semanticTypeOption-12">Clinical Drug</option>
+                    <option value="Congenital Abnormality" id="semanticTypeOption-13">Congenital Abnormality</option>
+                    <option value="Diagnostic Procedure" id="semanticTypeOption-14">Diagnostic Procedure</option>
+                    <option value="Disease or Syndrome" id="semanticTypeOption-15">Disease or Syndrome</option>
+                    <option value="Experimental Model of Disease" id="semanticTypeOption-16">Experimental Model of Disease</option>
+                    <option value="Finding" id="semanticTypeOption-17">Finding</option>
+                    <option value="Health Care Activity" id="semanticTypeOption-18">Health Care Activity</option>
+                    <option value="Health Care Related Organization" id="semanticTypeOption-19">Health Care Related Organization</option>
+                    <option value="Individual Behavior" id="semanticTypeOption-20">Individual Behavior</option>
+                    <option value="Injury or Poisoning" id="semanticTypeOption-21">Injury or Poisoning</option>
+                    <option value="Laboratory Procedure" id="semanticTypeOption-22">Laboratory Procedure</option>
+                    <option value="Laboratory Procedure,Molecular Biology Research Technique" id="semanticTypeOption-23">Laboratory Procedure,Molecular Biology Research Technique</option>
+                    <option value="Laboratory or Test Result" id="semanticTypeOption-24">Laboratory or Test Result</option>
+                    <option value="Mental Process" id="semanticTypeOption-25">Mental Process</option>
+                    <option value="Mental or Behavioral Dysfunction" id="semanticTypeOption-26">Mental or Behavioral Dysfunction</option>
+                    <option value="Molecular Biology Research Technique" id="semanticTypeOption-27">Molecular Biology Research Technique</option>
+                    <option value="Neoplastic Process" id="semanticTypeOption-28">Neoplastic Process</option>
+                    <option value="Pathologic Function" id="semanticTypeOption-29">Pathologic Function</option>
+                    <option value="Pharmacologic Substance" id="semanticTypeOption-30">Pharmacologic Substance</option>
+                    <option value="Research Activity" id="semanticTypeOption-31">Research Activity</option>
+                    <option value="Self-help or Relief Organization" id="semanticTypeOption-32">Self-help or Relief Organization</option>
+                    <option value="Sign or Symptom" id="semanticTypeOption-33">Sign or Symptom</option>
+                    <option value="Temporal Concept" id="semanticTypeOption-34">Temporal Concept</option>
+                    <option value="Therapeutic or Preventive Procedure" id="semanticTypeOption-35">Therapeutic or Preventive Procedure</option>
+                    <option value="Tissue" id="semanticTypeOption-36">Tissue</option>
+                </select>
+            </div>
+
+        </div>
+        <div class="additionalSearchFieldsDiv">
+                <!--
+                 CT 1787241443 as of Aug 2021
+                 MR  480420440
+                 US   68781185
+                 SR   38942672
+                 PT   34770404
+                 CR   21193064
+                 OT    8304207
+                 XA    7753345
+                 RF    7480051
+                 DX    6275717
+                 MG    2350607
+                 PR    1926485
+                 NM    1374792
+                 OTHER  377405
+                -->
+            <div>
+                <label for="modalityOption" class="formbuilder-select-label">Modalities in Study</label>
+                <select class="form-control" name="modalityOption" id="modalityOption">
+                    <option value="Any" selected="true" id="modalityOption-0">Any</option>
+                    <option value="CT" id="modalityOption-1">CT</option>
+                    <option value="MR" id="modalityOption-2">MR</option>
+                    <option value="US" id="modalityOption-3">US</option>
+                    <option value="PT" id="modalityOption-4">PT</option>
+                    <option value="CR" id="modalityOption-5">CR</option>
+                    <option value="OT" id="modalityOption-6">OT</option>
+                    <option value="XA" id="modalityOption-7">XA</option>
+                    <option value="RF" id="modalityOption-8">RF</option>
+                    <option value="DX" id="modalityOption-9">DX</option>
+                    <option value="MG" id="modalityOption-10">MG</option>
+                    <option value="PR" id="modalityOption-11">PR</option>
+                    <option value="NM" id="modalityOption-12">NM</option>
+                    <option value="OTHER" id="modalityOption-13">Others</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="start_date" class="">Start date</label>
+                <input type="text" id="start_date" name="start_date">
+                <label for="end_date" class="">End date</label>
+                <input type="text" id="end_date" name="end_date">
+            </div>
+
+            <div class="formbuilder-file form-group field-csvFiles">
+                <label for="csvFiles" class="formbuilder-file-label">CSV file(s) to filter results:</label>
+                <input type="file" class="form-control" name="csvFiles" access="false" multiple="true" id="csvFiles">
+                <input type="hidden" name="csvFileContent" id="csvFileContent">
+            </div>
+
+            <div>
+                <select name="returnFields" id="returnFields" multiple>
+                    <option value="SOPInstanceUID">SOPInstanceUID</option>
+                    <option value="SeriesInstanceUID">SeriesInstanceUID</option>
+                    <option value="StudyInstanceUID">StudyInstanceUID</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="searchSubmitDiv">
+            <input type="submit" name="submitFormButton" id="submitFormButton" value="Search"/>
+        </div>
+
+    </div>
+</form-not-needed>
+
+<div class="message"></div>
+
+<div class="main">
+    <div  id="leftPanel">
+        <div class="title">Document List</div>
+        <div class="formbuilder-button form-group field-button-1628606234801">
+            <button type="button" class="downloadResultsButtonClass" name="downloadResultsButtonName" access="false" id="downloadResultsButton">Download Results</button>
+        </div>
+        <div class="docList">
+        </div>
+    </div>
+    <div id="rightPanel">
+        <div class="title">Annotated Document Content</div>
+        <div class="legend">Legend: <mark class="default selected">UMLS concepts</mark> <mark class="Negated selected">negated</mark> <mark class="hypo selected">hypothetical</mark> <mark class="Other selected">Other experiencer</mark> <mark class="abbrev selected">abbreviation</mark>  <mark class="customised selected">customised dictionary terms</mark></div>
+        <div class="legend mappings"></div>
+        <div class="docContent">
+        </div>
+    </div>
+</div>
+</body>
+</html>

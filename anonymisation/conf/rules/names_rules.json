@@ -1,0 +1,308 @@
+{
+  "PHI_rules": {
+
+    "clinic": [
+      {
+        "pattern": "\\b(Inverness|Dundee|Ninewells|Glasgow|Edinburgh|Fife|Stirling|Kilmarnock|Crosshouse|Ayrshire|WGH|RIE|RHSC)\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "institute"
+      },
+      {
+        "pattern": "\\bplease\\s+contact(\\s+\\w+(\\s+\\w+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "institute"
+      },
+      {
+        "pattern": "\\s+referral to(\\s+\\w+(\\s+\\w+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "institute"
+      },
+      {
+        "pattern": "(([A-Za-z]* {1,}){1,2}(Hospital|Prim Ctre|Clinic|Infirmary|hosp|unit)(\\,\\s{0,}\\w+){0,1})\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "clinic"
+      },
+      {
+        "pattern": "(([A-Za-z]* {1,}){1,2}(medical practice|royal)(\\,\\s{0,}\\w+){0,1})\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "clinic"
+      },
+      {
+        "pattern": "\\b(?:transfer|transferred|discharge|discharged) (?:to|from)(?: the){0,1} (([^\\s]*))\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "clinic"
+      },
+      {
+        "pattern": "\\bfollowed at (([^\\s]*))\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "clinic"
+      },
+      {
+        "pattern": "\\bcome to (([^\\s]*))\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "clinic"
+      }
+    ],
+    "assistant": [
+      {
+        "pattern": "(.*)(secretary|nurse)",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name",
+          "inst_type"
+        ],
+        "data_type": "assistant",
+        "disabled": true
+      },
+      {
+        "pattern": "(secretary|nurse|registra|registrar)\\s+([A-Za-z\\-\\(\\)]{3,})\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "assistant"
+      },
+      {
+        "pattern": "(reported|checked|verified|dictated|typed|entered|signed|uploaded|referred|read|reviewed|transcribed) by\\:{0,1} +((Miss|Ms|Mr) +){0,1}([A-Za-z\\.\\(\\)]+(( {0,}\\,){0,1} +[A-Za-z\\.']+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "title2",
+          "title3",
+          "name"
+        ],
+        "data_type": "assistant"
+      },
+      {
+        "pattern": "(specialist|signed\\:)\\:{0,1}\\s+([A-Za-z\\.-]+(( {0,}\\,){0,1} +[A-Za-z\\.-]+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "assistant"
+      },
+      {
+        "pattern": "(report to|for attention of|\\bcc)\\:{0,1}\\s+([A-Za-z\\.]+(\\,{0,1} +[A-Za-z\\.]+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "assistant"
+      },
+      {
+        "pattern": "(d/w|discussed with)\\:{0,1}\\s+([A-Za-z\\.]+(\\,{0,1} +[A-Za-z\\.]+){0,2})",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "assistant"
+      }
+    ],
+    "Consultant": [
+      {
+        "pattern": "(Referring Consultant)\\:(.*)$",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "Referring Consultant"
+      }
+    ],
+    "Exam num": [
+      {
+        "pattern": "(Examination Number)\\: {0,}(\\d+)",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "Examination Number"
+      }
+    ],
+    "DOB": [
+      {
+        "pattern": "(DOB)\\: {0,}(\\d+/\\d+/\\d+)",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels":[
+          "label",
+          "name"
+        ],
+        "data_type": "DOB"
+      }
+    ],
+    "doctor": [
+      {
+        "pattern": "\\b(Dr|Prof|Professor|Radiologist|Radiographer|Radiographers)[ \\.:]{0,} +([\\w\\.0-9\\,'-]+( +(?!and)[\\w\\.0-9\\(\\)'\\-]+){0,2})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "doctor"
+      },
+      {
+        "pattern": "\\b(Dr|Prof)\\. {0,}([\\w\\.0-9\\,']+( +(?!and)[\\w\\.0-9'\\-]+){0,2})\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "doctor"
+      }
+    ],
+    "patient": [
+      {
+        "pattern": "patientID = ([^\\;]*);",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+          "data_labels": [
+          "name"
+        ],
+        "data_type": "patient"
+      },
+      {
+        "pattern": "patientName = \"([^\"]*)\";",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+          "data_labels": [
+          "name"
+        ],
+        "data_type": "patient"
+      },
+      {
+        "pattern": "patientUID = \"([^\"]*)\";",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "patient"
+      },
+      {
+        "pattern": "\\b(Miss|Ms|Mrs|Name)\\.{0,1}\\:{0,1} +([A-Za-z\\-]+(\\,{0,1}\\s+[A-Za-z\\-]+){0,1})\\b",
+        "flags": [
+          "multiline",
+          "ignorecase"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "patient"
+      },
+      {
+        "pattern": "([A-Za-z\\-]+(\\,{0,1}\\s+[A-Za-z\\-]+){0,1})\\s+\\(\\d{1,2}\\/\\d{1,2}\\/\\d{2,4}[^\\)]+\\)",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "patient"
+      },
+      {
+        "pattern": "\\b(Mr)\\.{0,1} +([A-Za-z\\-]+(\\,{0,1}\\s+[A-Za-z\\-]+){0,1})\\b",
+        "flags": [
+          "multiline"
+        ],
+        "data_labels": [
+          "title",
+          "name"
+        ],
+        "data_type": "patient"
+      }
+    ],
+    "ending_initials":[
+      {
+        "pattern": "^([A-Z]{2,3}(\\/[A-Z]{2,3}){0,1})$",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "end-initials"
+      }
+    ]
+  }
+}
