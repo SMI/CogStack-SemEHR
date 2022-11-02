@@ -12,10 +12,9 @@ Contents:
 
 * [REST API](RESTful_service/README.md)
 * [REST API Dockerfile](Dockerfile.md)
-* [REST API images](RESTful_service/vis/images/README.md)
-* [REST API css](RESTful_service/vis/css/images/README.md)
-* [anonymisation rules](anonymisation/README.md)
-* [anonymisation rules](anonymisation/conf/README.md)
+* [REST API images](RESTful_service/vis/images/README.md) and [REST API css](RESTful_service/vis/css/images/README.md)
+* [anonymisation](anonymisation/README.md)
+* [anonymisation config](anonymisation/conf/README.md)
 * [anonymisation rules](anonymisation/conf/rules/README.md)
 * [UMLS ontology](umls/README.md)
 * [eHOST annotation](annotation.md)
