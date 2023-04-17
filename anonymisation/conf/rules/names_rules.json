@@ -198,7 +198,17 @@
           "name"
         ],
         "data_type": "DOB"
-      }
+      },
+      {
+        "comment": "age and sex as one or two digits, optional space, capital M or F",
+        "pattern": "[\\b\\W](\\d{1,2} {0,1}[MF])[\\b\\W]",
+        "flags": [
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "DOB"
+      },
     ],
     "doctor": [
       {
