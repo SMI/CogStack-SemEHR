@@ -213,7 +213,7 @@
     "doctor": [
       {
         "comment": "Initials of well known person",
-        "pattern": "\\b(EJRVB)\\b",
+        "pattern": "\\b(EJRVB|van Beek)\\b",
         "flags": [
           "ignorecase"
         ],
