@@ -143,6 +143,15 @@
           "name"
         ],
         "data_type": "GMC"
+      },
+      {
+        "pattern": "[\\b\\W](\\d{7})[\\b\\W]",
+        "flags": [
+        ],
+        "data_labels":[
+          "name"
+        ],
+        "data_type": "GMC"
       }
     ]
   }
