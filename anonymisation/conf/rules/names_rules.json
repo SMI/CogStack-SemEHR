@@ -202,6 +202,17 @@
     ],
     "doctor": [
       {
+        "comment": "Initials of well known person",
+        "pattern": "\\b(EJRVB)\\b",
+        "flags": [
+          "ignorecase"
+        ],
+        "data_labels": [
+          "name"
+        ],
+        "data_type": "doctor"
+      },
+      {
         "pattern": "\\b(Dr|Prof|Professor|Radiologist|Radiographer|Radiographers)[ \\.:]{0,} +([\\w\\.0-9\\,'-]+( +(?!and )[\\w\\.0-9\\(\\)'\\-]+){0,2})\\b",
         "flags": [
           "ignorecase"
