@@ -127,7 +127,7 @@ easily created manually. It has headers like this:
 The headers are defined in the config file as `sensitive_fields`.
 It uses the given names (from any tag listed in the `sensitive_fields` config)
 so they can be replaced if found in the text. Forenames and surnames
-are handled separately.
+are handled separately (as long as they are 4 or more letters).
 
 It then anonymises all text after the `[[ContentSequence]]` header, or any
 tag listed in the `working_fields` config. If there is no field in the input

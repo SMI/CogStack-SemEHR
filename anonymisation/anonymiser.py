@@ -114,6 +114,8 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
         # let's do nothing if no text fields were found
         return
     s = s.replace('\r', ' ')
+    # Collect all sensitive phrases, and
+    # split into sensitive words for words >= 4 chars long
     s2repls = []
     for f in sents:
         s2repls.append(sents[f].strip())
@@ -127,6 +129,8 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     for sd in cur_sent_container:
         if len(sd['sent']) > 3:
             s2repls.append(sd['sent'])
+    # Look for all sensitive phrases/words in anonymised_text
+    # and append to sent_container
     for v in s2repls:
             ptn = re.compile(re.escape(v), re.IGNORECASE)
             matches = re.finditer(ptn, anonymised_text)
