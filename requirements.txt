@@ -3,7 +3,7 @@ http.server
 joblib
 psycopg2
 pymongo
-re2
+pyre2_updated
 spacy
 urllib.request
 urllib3
