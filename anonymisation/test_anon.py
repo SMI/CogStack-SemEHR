@@ -28,7 +28,8 @@ def anon_doc(doc):
           "rule_file_pattern": ".*_rules.json$",
           "rule_group_name": "PHI_rules",
           "working_fields": ["Finding", "Text", "ContentSequence"],
-          "sensitive_fields": ["Patient ID", "Patient Name", "Person Observer Name", "Referring Physician Name"],
+          "sensitive_fields": ["Patient ID", "Patient Name", "Person Observer Name", "Referring Physician Name",
+              "Other Names"],
           "annotation_mode": False,
           "text_data_path": tmpdirname,
           "anonymisation_output": tmpdirname + "/out",
@@ -84,7 +85,10 @@ if __name__ == '__main__':
         print(anon_doc)
     else:
         # This tests postcode(!) as 6th is mistaken for the end of a postcode and it thinks the whole thing is an address
-        doc = "....Semi-urgent (<1 month) outpatient MRI head \\T\\ orbits please. Complete left 6th cranial nerve palsy/lateral rectus restriction since 20th February - no improvement. Initially pain around left eye but now comfortable. No disc swelling. Diabetic with history of polyneuropathy, and previous left 3rd nerve palsy 2006 (recovered). ?Structural cause for 6th nerve palsy.\n"
+        doc = "[[Patient Name]]Orbits\n"
+        doc += "[[Other Names]] please \n"
+        doc += "[[ContentSequence]]\n"
+        doc += "....Semi-urgent (<1 month) outpatient MRI head \\T\\ orbits please. Complete left 6th cranial nerve palsy/lateral rectus restriction since 20th February - no improvement. Initially pain around left eye but now comfortable. No disc swelling. Diabetic with history of polyneuropathy, and previous left 3rd nerve palsy 2006 (recovered). ?Structural cause for 6th nerve palsy.\n"
         doc += "<BR>Radiology Report (Booking No. 31065412), Raigmore Hospital, Inverness\n\n\n<BR>2004429060               Exam Date 21/10/2016\n\n\n<BR>Angry Nelly (10/04/1952 Male)\n\n\n<BR>58 BLANTYREE RD  LOCHDUBH  INVERNESS    IV2 1BS\n\n\n<BR>Referred by  Dell, Michael (Cons A&E)\n\n\n<BR>Raigmore A&E  Raigmore Hospital  Old Perth Road  Inverness  IV2 3UJ\n"
         doc += "<BR>CHI NUMBER: 12345  Examination Number: 23456  Examination Date: 12 June 2002\n"
         doc += "<BR>GMC 34567\n"
