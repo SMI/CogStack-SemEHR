@@ -43,7 +43,11 @@ def retain_text_sections(text, sects, sent_fields):
             if prev_field in sent_fields:
                 txt = text[prev_pos:m.span()[0]].strip()
                 if txt:
-                    sents[prev_field] = txt
+                    if prev_field in sents:
+                        # If a [[tag]] appears multiple times then append after a space
+                        sents[prev_field] = sents[prev_field] + ' ' + txt
+                    else:
+                        sents[prev_field] = txt
             if prev_field in sects:
                 sec_texts.append((prev_field, text[prev_pos:m.span()[0]]))
         prev_pos = m.span()[0] + len(m.group(0))
@@ -53,18 +57,24 @@ def retain_text_sections(text, sects, sent_fields):
     if prev_field in sent_fields:
         txt = text[prev_pos:].strip()
         if txt:
-            sents[prev_field] = txt
+            if prev_field in sents:
+                # If a [[tag]] appears multiple times then append after a space
+                sents[prev_field] = sents[prev_field] + ' ' + txt
+            else:
+                sents[prev_field] = txt
     return sec_texts, sents
 
 
 def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule_group):
     """
     anonymise a document
-    :param doc_id:
-    :param text:
-    :param failed_docs:
+    :param doc_id: name of document, used as 'doc' key in sent_container output
+    :param text:   the input text
+    :param failed_docs:  returns a list of doc_id which failed to anonymise
     :param anonymis_inst: anonymise_rule instance
-    :return:
+    :param sent_container: returns list [{doc, pos, start, type, sent}, ...]
+    :param rule_group: passed to the anonymis_inst method do_full_text_parsing
+    :return: sent_container updated, returns tuple (anonymised text, sen_data)
     """
     # rets = do_letter_parsing(text)
     rets = anonymis_inst.do_full_text_parsing(text, rule_group=rule_group)
@@ -119,6 +129,7 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     s2repls = []
     for f in sents:
         s2repls.append(sents[f].strip())
+        # split into words and keep each word that is 4 or more characters
         arr = [v for v in sents[f].strip().split(' ') if len(v) > 3]
         s2repls += arr
 
