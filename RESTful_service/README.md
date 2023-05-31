@@ -294,7 +294,10 @@ server can determine a sensible default value.
 "filter" = {
   "start_date" = "YYYY-MM-DD",
   "end_date" = "YYYY-MM-DD",
-  "modalities" = [ "CT", "MR", "US", "PT", "CR", "OT", "XA", "RF", "DX", "MG", "PR", "NM" ]
+  "modalities" = [ "CT", "MR", "US", "PT", "CR", "OT", "XA", "RF", "DX", "MG", "PR", "NM" ],
+  "sopinstanceuid" = [ "nnn", ]
+  "seriesinstanceuid" = [ "nnn", ]
+  "studyinstanceuid" = [ "nnn", ]
 },
 "returnFields" = [ "SOPInstanceUID", "SeriesInstanceUID", "StudyInstanceUID" ]
 ```

@@ -562,6 +562,9 @@ class PostgresDocAnn(DocAnn):
             if end_date and not start_date:
                 start_date = '19900101'
             modalities = queryDict.get('filter', {}).get('modalities', 'Any') # i.e. 'Any' if not set
+            sopinstanceuids = queryDict.get('filter', {}).get('sopinstanceuid', [])
+            seriesinstanceuids = queryDict.get('filter', {}).get('seriesinstanceuid', [])
+            studyinstanceuids = queryDict.get('filter', {}).get('studyinstanceuid', [])
             if modalities not in ('Any', ['Any']):
                 if isinstance(modalities, str):
                     # Convert string CT,MR into 'CT','MR'
@@ -573,6 +576,15 @@ class PostgresDocAnn(DocAnn):
             if start_date and end_date:
                 # XXX need to sanity-check the string matches YYYYMMDD or use {sd} AND {ed} Literals
                 sql_query_filter += " AND (cast_to_date(semehr_results->>'ContentDate') BETWEEN {sd} AND {ed}) "
+            if sopinstanceuids:
+                sarr = ",".join(["('"+ inst +"')" for inst in sopinstanceuids])
+                sql_query_filter += " AND (semehr_results.SOPInstanceUID IN (VALUES %s)) " % sarr
+            if seriesinstanceuids:
+                sarr = ",".join(["('"+ inst +"')" for inst in seriesinstanceuids])
+                sql_query_filter += " AND (semehr_results->SeriesInstanceUID IN (VALUES %s)) " % sarr
+            if studyinstanceuids:
+                sarr = ",".join(["('"+ inst +"')" for inst in studyinstanceuids])
+                sql_query_filter += " AND (semehr_results->StudyInstanceUID IN (VALUES %s)) " % sarr
             sql_query_filter_exe = sql.SQL(sql_query_filter).format(sd = sql.Literal(start_date), ed=sql.Literal(end_date))
             sql_exe = sql_select_exe + sql_query_term_exe + sql_query_filter_exe
 
