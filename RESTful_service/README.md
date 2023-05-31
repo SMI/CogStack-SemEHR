@@ -302,6 +302,11 @@ server can determine a sensible default value.
 Note that the JSON structure will obviously have to be a single line of text encoded
 suitably for a GET URL.
 
+Alternatively the query can be submitted using POST if it is large.
+The content needs to be a dictionary containing "terms" at the top level
+along with optional "passphrase", "filter" and "returnFields".
+The passphrase has to be in here and not in the URL.
+
 All fields except "terms[q]" are optional (omit them rather than trying to provide a
 default value, so that the API itself can choose a suitable default value).
 

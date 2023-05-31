@@ -118,7 +118,7 @@ class UMLSmap:
                     continue
                 UMLSmap._cui_narrower[row[0]] = row[2].split(',')
             logging.debug('Loaded %d relationships' % len(UMLSmap._cui_narrower))
-            logging.debug('C0205076 narrower -> %s' % UMLSmap._cui_narrower['C0205076'])
+            #logging.debug('C0205076 narrower -> %s' % UMLSmap._cui_narrower['C0205076'])
 
     def load_snomed(self):
         """ Load the snomed.csv file into memory.

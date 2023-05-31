@@ -150,8 +150,19 @@ class S(SimpleHTTPRequestHandler):
                 qs = parse_qs(parsed.query) # QUERY_STRING
                 qs_j = json.loads(qs.get('j', ['{}'])[0]) # value of j=JSON in QUERY_STRING
                 callback = qs['callback'][0] if 'callback' in qs else None
+                passphrase=qs['passphrase'][0] if 'passphrase' in qs else None
+                if post_data and 'content' in post_data:
+                    try:
+                        qs_j = json.loads(post_data['content'])
+                        callback = qs_j.get('callback', None)
+                        passphrase = qs_j.get('passphrase', None)
+                    except:
+                        pass
+                logging.debug('PATH = %s' % self.path)
+                logging.debug('POST = %s' % post_data)
+                logging.debug('QS = %s' % qs)
                 self.output_jsonp(APIMapper.get_mapper().map(self.path,
-                        passphrase=qs['passphrase'][0] if 'passphrase' in qs else None,
+                        passphrase=passphrase,
                         queryDict=qs_j if qs_j else None,
                         post_data=post_data),
                     callback)
