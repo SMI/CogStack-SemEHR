@@ -59,9 +59,12 @@ sudo ip addr add 10.0.2.135/32 brd + dev eth10 label eth10:0
 
 Create a symbolic link to `utils.py` in the parent directory.
 
-Create a Python3 virtual environment and install the requirements
-`pymongo` and `ppsycopg2-binary`. They might require the dev versions of
-the postgresql client libs.
+Create a Python3 virtual environment and install the requirements:
+```
+pip install pymongo
+pip install psycopg2_binary
+```
+This might require the dev versions of the postgresql client libs.
 
 ### External datasets
 
@@ -340,5 +343,3 @@ If an error occurs the response is:
   "message": "..."
 }
 ```
-```
-
