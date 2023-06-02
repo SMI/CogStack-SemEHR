@@ -334,8 +334,13 @@ class PostgresDocAnn(DocAnn):
         return None
 
     def query_or_cui_to_cui_list(self, q, qdepth = 0, qstop = [], qonlysty = True):
-        """ Given a query string which may be free text OR a SNOMED, OR a CUI
-        in the form Cnnnnnnn, return an expanded list of CUIs filtered to
+        """ Given a query string which may be:
+        * free text e.g. "lung"
+        * a SNOMED e.g. "456"
+        * a CUI in the form Cnnnnnnn e.g. "C123"
+        * a comma-separated list of the above e.g. "C123,456"
+        * an actual list of the above e.g. ["C123","456"]
+        return an expanded list of CUIs filtered to
         only those which occur in the database.
         Expansion is done using cui_narrower, or
         if q is the name of a mapping then all CUIs in the map are returned.
@@ -343,26 +348,33 @@ class PostgresDocAnn(DocAnn):
         """
         cui_list = []
 
-        # If it's a SNOMED code then convert it 
-        snomed_match = self.re_snomed_match(q)
-        if snomed_match:
-            sc = self.umls_map.snomed_to_cui(snomed_match)
-            logging.debug('SNOMED %s -> CUI %s' % (snomed_match, sc))
-            if sc:
-                q = sc
-            # XXX else need to return an error message that SNOMED doesn't exist.
-
-        cui_match = self.re_cui_match(q)
-        if cui_match:
-            # Looks like a CUI so use the index on the array of CUIs
-            # Query expansion:
-            cui_list = self.umls_map.cui_narrower(cui_match, maxdepth=qdepth, filter_to_same_tui=qonlysty, prunelist=qstop)
-        elif self.is_mapping(q):
-            # Not a CUI, so check if it's the name of a mapping
-            cui_list = self.mapping_cui_list(q)
-            logging.debug('Mapped %s to %s' % (q, cui_list))
+        # Turn it into a list (if not already)
+        if isinstance(q, list):
+            qlist = q
         else:
-            pass # return an empty list if q is plain text
+            qlist = q.split(',')
+
+        for q in qlist:
+            # If it's a SNOMED code then convert it 
+            snomed_match = self.re_snomed_match(q)
+            if snomed_match:
+                sc = self.umls_map.snomed_to_cui(snomed_match)
+                logging.debug('SNOMED %s -> CUI %s' % (snomed_match, sc))
+                if sc:
+                    q = sc
+                # XXX else need to return an error message that SNOMED doesn't exist.
+
+            cui_match = self.re_cui_match(q)
+            if cui_match:
+                # Looks like a CUI so use the index on the array of CUIs
+                # Query expansion:
+                cui_list.extend(self.umls_map.cui_narrower(cui_match, maxdepth=qdepth, filter_to_same_tui=qonlysty, prunelist=qstop))
+            elif self.is_mapping(q):
+                # Not a CUI, so check if it's the name of a mapping
+                cui_list.extend(self.mapping_cui_list(q))
+                logging.debug('Mapped %s to %s' % (q, cui_list))
+            else:
+                pass # return an empty list if q is plain text
 
         # Filter this list down to just the CUIs which are present in the database.
         # XXX if that results in zero then return an error message that no CUIs present.
@@ -733,6 +745,22 @@ class MongoDocAnn(DocAnn):
     def search_docs(self, query):
         return query(query)
 
+
+def test_query_or_cui_to_cui_list():
+    pgconf = {
+        "host": "localhost", "user":"semehr", "password":"semehr",
+        "db":"semehr","schema":"semehr",
+        "ann_collection":"semehr_results",
+        "text_collection":"semehr_results"
+    }
+    p = PostgresDocAnn(pgconf)
+    assert(p.query_or_cui_to_cui_list(q = "lung") == [])
+    assert(p.query_or_cui_to_cui_list(q = "1234567") == [])
+    # XXX should check a known snomed maps to a CUI (requires snomed.csv)
+    assert(p.query_or_cui_to_cui_list(q = "C123456") == ["C123456"])
+    assert(p.query_or_cui_to_cui_list(q = "C123456,C234567") == ["C123456","C234567"])
+    assert(p.query_or_cui_to_cui_list(q = ["C123456","C234567"]) == ["C123456","C234567"])
+    # XXX also need to test a named mapping
 
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
