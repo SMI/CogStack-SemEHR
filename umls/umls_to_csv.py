@@ -152,14 +152,20 @@ with open('MRCONSO.RRF') as fd:
     rdr = csv.reader(fd, delimiter='|')
     for row in rdr:
         cui = row[0]
-        lang = row[1]
+        lang = row[1]    # e.g. ENG
+        ts = row[2]      # e.g. P or S
+        stt = row[4]     # e.g. PF VC VO
+        ispref = row[6]  # e.g. Y or N
         snomed = row[9]
         dic = row[11]
         label = row[14]
         # Ignore non-English names
         if lang != 'ENG':
             continue
-        label_for_cui[cui] = label # may be multiple, last row wins
+        # Preferred label, see https://list.nih.gov/cgi-bin/wa.exe?A2=ind1910&L=UMLSUSERS-L&P=R655
+        # LAT='ENG' and TS='P' and STT='PF' and ISPREF='Y' 
+        if lang == 'ENG' and ts == 'P' and stt == 'PF' and ispref == 'Y':
+            label_for_cui[cui] = label
         if dic == 'SNOMEDCT_US':
             cui_for_snomed[snomed] = cui # may be multiple, last row wins
             if cui == test_code:
@@ -219,19 +225,19 @@ print('(%d entries total))' % len(nar))
 # ---------------------------------------------------------------------
 # OUTPUT
 
-print('Output semantic types...')
+print('Output semantic types (sty.csv)...')
 with open('sty.csv', 'w') as fd:
     print('tui|tuigroup|tuigrouplabel', file=fd)
     for tui in sorted(group_for_tui):
         print('%s|%s|%s' % (tui, group_for_tui[tui], grouplabel_for_tui[tui]), file=fd)
 
-print('Output SNOMED...')
+print('Output SNOMED (snomed.csv)...')
 with open('snomed.csv', 'w') as fd:
     print('snomed|cui', file=fd)
     for snomed in sorted(cui_for_snomed):
         print('%s|%s' % (snomed, cui_for_snomed[snomed]), file=fd)
 
-print('Output concepts...')
+print('Output concepts (cui.csv)...')
 with open('cui.csv', 'w') as fd:
     print('cui|tui|tuigroup|cuilabel', file=fd)
     for cui in sorted(tui_for_cui):
@@ -241,7 +247,7 @@ with open('cui.csv', 'w') as fd:
             label_for_cui.get(cui,'')), # some concepts only have non-English labels
             file=fd)
 
-print('Output relationships...')
+print('Output relationships (rel.csv)...')
 with open('rel.csv', 'w') as fd:
     print('cui1|has|cui2', file=fd)
     for cui1 in sorted(narrower):
