@@ -589,14 +589,17 @@ class PostgresDocAnn(DocAnn):
                 # XXX need to sanity-check the string matches YYYYMMDD or use {sd} AND {ed} Literals
                 sql_query_filter += " AND (cast_to_date(semehr_results->>'ContentDate') BETWEEN {sd} AND {ed}) "
             if sopinstanceuids:
+                # SOPInstanceUID is a column so see if it matches
                 sarr = ",".join(["('"+ inst +"')" for inst in sopinstanceuids])
                 sql_query_filter += " AND (semehr_results.SOPInstanceUID IN (VALUES %s)) " % sarr
             if seriesinstanceuids:
+                # SeriesInstanceUID is a JSON element
                 sarr = ",".join(["('"+ inst +"')" for inst in seriesinstanceuids])
-                sql_query_filter += " AND (semehr_results->SeriesInstanceUID IN (VALUES %s)) " % sarr
+                sql_query_filter += " AND ((semehr_results->>'SeriesInstanceUID') IN (VALUES %s)) " % sarr
             if studyinstanceuids:
+                # StudyInstanceUID is a JSON element
                 sarr = ",".join(["('"+ inst +"')" for inst in studyinstanceuids])
-                sql_query_filter += " AND (semehr_results->StudyInstanceUID IN (VALUES %s)) " % sarr
+                sql_query_filter += " AND ((semehr_results->>'StudyInstanceUID') IN (VALUES %s)) " % sarr
             sql_query_filter_exe = sql.SQL(sql_query_filter).format(sd = sql.Literal(start_date), ed=sql.Literal(end_date))
             sql_exe = sql_select_exe + sql_query_term_exe + sql_query_filter_exe
 
