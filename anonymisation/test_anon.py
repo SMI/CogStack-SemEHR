@@ -95,6 +95,7 @@ if __name__ == '__main__':
         doc += "<BR>0131 937 2450\n"
         doc += "<BR>Another 10-digit number: 1357924680\n"
         doc += "<BR>Address: Geriatric Ward, Aisla, Ayr\n"
+        doc += "<BR>Patient is a 69M or 69yo male with 46 yo daughter\n"
         doc += "Radiographers: Looky Person\n"
         expected_phi = [
             '2006', '31065412', ' Raigmore Hospital, Inverness',
@@ -107,6 +108,7 @@ if __name__ == '__main__':
             '0131 937 2450',
             '1357924680',
             'Geriatric Ward, Aisla, Ayr',
+            '69M', '69', '46',
             'Looky Person'
         ]
         anon_doc, anon_phi = anon_doc(unescape_str(doc))

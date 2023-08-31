@@ -182,11 +182,14 @@ def anonymise_files_in_folder_mt(input_folder, anonymised_folder, rule_file, sen
                                        anonymis_inst, sent_data,
                                        fields=working_fields, sensitive_fields=sensitive_fields, do_ann=annotation_mode)
     utils.save_json_array(sent_data, sent_data_file)
+    # Make a list of all the 'type' attributes and their doc,pos,sent values
+    # e.g. t2sent['name'] = [ 'doc \t posN \t sent', ... ]
     t2sent = {}
     for s in sent_data:
         if s['type'] not in t2sent:
             t2sent[s['type']] = []
         t2sent[s['type']].append('\t'.join([s['doc'], str(s['pos']), s['sent']]))
+    # Make sure there's no duplicates within each list
     s = ''
     for t in t2sent:
         t2sent[t] = list(set(t2sent[t]))
