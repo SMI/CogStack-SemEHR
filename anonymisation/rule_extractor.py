@@ -36,7 +36,7 @@ class ExtractRule(object):
             try:
                 matches = re.finditer(ro['pattern'], full_text, flag)
                 for m in matches:
-                    ret = {'type': ro['data_type'], 'attrs': {}}
+                    ret = {'type': ro['data_type'], 'rule': ro['pattern'], 'attrs': {}}
                     results.append(ret)
                     ret['attrs']['full_match'] = m.group(0)
                     ret['pos'] = m.span()
