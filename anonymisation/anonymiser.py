@@ -170,12 +170,14 @@ def anonymise_files_in_folder_mt(input_folder, anonymised_folder, rule_file, sen
     failed_docs = []
     sent_data = []
     if num_threads > 0:
+        # SMI configuration does not use threads
         utils.multi_thread_tasking(fns, num_threads, wrap_anonymise_doc_by_file,
                                    args=[input_folder, rule_group, anonymised_folder, failed_docs,
                                          anonymis_inst, sent_data,
                                          working_fields, sensitive_fields, annotation_mode
                                          ])
     else:
+        # SMI configuration:
         for fn in fns:
             wrap_anonymise_doc_by_file(fn, # num_threads, wrap_anonymise_doc_by_file,
                                        input_folder, rule_group, anonymised_folder, failed_docs,
@@ -259,8 +261,10 @@ def do_anonymisation_by_conf(conf_file):
         logging.info('logging to %s' % log_file)
 
     if setttings['mode'] == 'dir':
+        # SMI configuration does not use 'dir'
         dir_anonymisation(text_foler, rule_files, rule_group=rule_group)
     else:
+        # SMI configuration uses 'mt'
         anonymised_folder = setttings['anonymisation_output']
         removed_output = setttings['extracted_phi']
         sensitive_output = setttings['grouped_phi_output']
