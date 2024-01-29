@@ -5,8 +5,9 @@
 
 # If you have got postgres installed locally set docker=False
 # If you are using postgres in a separate docker container
-# it must have been run with -e POSTGRES_PASSWORD=semehr.
-docker=True
+# (it must have been run with -e POSTGRES_PASSWORD=semehr)
+# then set docker=True
+docker=False
 
 DB="semehr"
 SCH="umls"
