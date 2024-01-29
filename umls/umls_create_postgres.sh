@@ -8,6 +8,7 @@
 # (it must have been run with -e POSTGRES_PASSWORD=semehr)
 # then set docker=True
 docker=False
+if [ "$1" == "--docker" ]; then docker=True; fi
 
 DB="semehr"
 SCH="umls"
