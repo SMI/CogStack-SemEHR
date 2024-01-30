@@ -35,6 +35,7 @@ be localhost:8080.  Edit the file `RESTful_service/vis/js/api.js`
 ```
 service_url: "http://localhost:8080/api"
 ```
+The webserver code should now also obey the config without needing to modify the code.
 
 Check if you want a password by editing the file `RESTful_service/conf/settings.json`
 ```
@@ -61,9 +62,9 @@ docker run -it --rm -p 8080:8080 howff/annotation_server /bin/bash
 
 # Run live web server
 
-You won't be able to CTRL-C out of this, use docker stop to terminate.
+Use docker stop to terminate this:
 ```
-docker run --rm -p 8485:8485 howff/annotation_server
+docker run --rm -d -p 8485:8485 howff/annotation_server
 ```
 
 Test the live web server (should use SSL on port 8485)
@@ -78,3 +79,8 @@ docker login
 docker push howff/annotation_server
 ```
 
+# Testing
+
+Add `-p 5432:5432` to get access to the postgres database server.
+
+Add `-v ~/src/SMI/CogStack-SemEHR:/CogStack-SemEHR` to use a local copy.
