@@ -45,6 +45,10 @@ Check if you want a password by editing the file `RESTful_service/conf/settings.
   "passphrase": "something",
 ```
 
+Note on permissions: the config file `/var/lib/postgresql/data2/pg_hba.conf`
+has wide-open permissions `host all all 0.0.0.0/0 trust` which is only a problem
+if you expose the port `5432`.
+
 # Build
 
 Building the image involves populating a postgres database so it will take

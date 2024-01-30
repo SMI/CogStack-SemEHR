@@ -12,6 +12,7 @@ COPY tmp/SmiServices-5.4.0-py3-none-any.whl /CogStack-SemEHR/
 RUN pip install --break-system-packages /CogStack-SemEHR/SmiServices-5.4.0-py3-none-any.whl
 # /usr/lib/postgresql/14/bin/
 RUN (su postgres -c "initdb -D /var/lib/postgresql/data2")
+RUN (echo "host all all 0.0.0.0/0 trust" >> /var/lib/postgresql/data2/pg_hba.conf)
 RUN (su postgres -c "pg_ctl -D /var/lib/postgresql/data2 -l /tmp/logfile start"; /CogStack-SemEHR/tmp/postgres_init_01.sh; cd /CogStack-SemEHR/umls; chmod go+r *.csv; ./umls_create_postgres.sh; SMI_LOGS_ROOT=/CogStack-SemEHR /CogStack-SemEHR/tmp/semehr_to_postgres.py -y /CogStack-SemEHR/tmp/default.yaml -t /CogStack-SemEHR/tmp/txt -j /CogStack-SemEHR/tmp/json -m /CogStack-SemEHR/tmp/meta; su postgres -c "pg_ctl -D /var/lib/postgresql/data2 stop")
 RUN apt-get install -y nginx
 RUN sudo openssl req -x509 -nodes -days 7300 -newkey rsa:2048 \
