@@ -13,13 +13,14 @@ To build the docker image you need the SmiServices wheel, a couple of
 postgres loading scripts, the umls CSV files, and some sample documents.
 
 ```
-cp ../SmiServices/src/common/Smi_Common_Python/dist/SmiServices-4.0.0-py3-none-any.whl tmp
-cp ../structuredreports/src/tools/postgres_init_01.sh    tmp
-cp ../structuredreports/src/tools/semehr_to_postgres.py  tmp
+mkdir -p tmp
+cp ../SmiServices/src/common/Smi_Common_Python/dist/SmiServices-X.X.X-py3-none-any.whl tmp
+cp ../StructuredReports/src/tools/postgres_init_01.sh    tmp
+cp ../StructuredReports/src/tools/semehr_to_postgres.py  tmp
 mkdir -p  tmp/txt  tmp/meta  tmp/json
-cp ../structuredreports/src/data/mtsamples_ihi_docs/doc000?.txt   tmp/txt
-cp ../structuredreports/src/data/mtsamples_ihi_meta/doc000?.json  tmp/meta
-cp ../structuredreports/src/data/mtsamples_ihi_semehr_results/doc000?.json  tmp/json
+cp ../StructuredReports/src/data/mtsamples_ihi_docs/doc000?.txt   tmp/txt
+cp ../StructuredReports/src/data/mtsamples_ihi_meta/doc000?.json  tmp/meta
+cp ../StructuredReports/src/data/mtsamples_ihi_semehr_results/doc000?.json  tmp/json
 cat << _EOF > tmp/default.yaml
 PostgresDatabases:
     SemEHRStoreOptions:
@@ -29,6 +30,8 @@ PostgresDatabases:
         DatabaseName: 'semehr'
 _EOF
 ```
+
+Edit `Dockerfile` with the correct filename for SmiServices-X.X.X-py3-none-any.whl`.
 
 Edit the URL at which you expect the service to run. Inside docker it should
 be localhost:8080.  Edit the file `RESTful_service/vis/js/api.js`
