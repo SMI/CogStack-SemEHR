@@ -240,6 +240,26 @@ class PostgresDocAnn(DocAnn):
         self.umls_map = umls.UMLSmap(settings = conf)
         self._default_query_depth = 0
         self._uuid = ''
+        self._has_cuisop = False
+
+
+    def open_database(self):
+        """ Open a connection to the database using the credentials
+        held in the class variables _host, _user, etc.
+        Sets self._pgConnection to be used by other methods.
+        Sets self._has_cuisop to True if the "cui_sop" table exists.
+        """
+        logging.info('Connecting to postgresql')
+        self._pgConnection = psycopg2.connect(host=self._host, user=self._user, password=self._pwd, dbname=self._db)
+        # Set the schema name so it doesn't need to be specified before each table name
+        self._pgConnection.cursor().execute(sql.SQL("SET search_path TO {},public").format(sql.Identifier(self._schema)))
+        self._pgConnection.commit()
+        # Find out if the "cui_sop" table exists (only in new database)
+        cursor = self._pgConnection.cursor()
+        cursor.execute("SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name='cui_sop')")
+        if bool(cursor.fetchone()[0]):
+            self._has_cuisop = True
+
 
     def save_transaction(self, docs):
         """ Save the current docs (actually just SOPInstanceUID,
@@ -388,13 +408,23 @@ class PostgresDocAnn(DocAnn):
         return a SQL object being the query expression,
         i.e. annotation_array_as_text_array(semehr_results, 'cui') && ARRAY[CUI,CUI,...]
         or   to_tsvector(annotation_array_as_text(semehr_results, 'pref')) @@ websearch_to_tsquery(q)
+        If you have the cui_sop table it will become
+        SOPInstanceUID IN ( SELECT SOPInstanceUID FROM cui_sop WHERE cui IN ('C111','C222') ), or
+        SOPInstanceUID = ANY( ARRAY( SELECT SOPInstanceUID FROM cui_sop WHERE cui IN ('C111','C222') ) )
         """
         cui_list = q if isinstance(q, list) else []
-        # Create SQL
+        cui_list_as_pg_array = ','.join(["'"+x+"'" for x in cui_list]) # e.g. 'c1','c2'
+        logging.debug('Filtered list of CUI to find: %s' % cui_list)
+        # Create SQL using new cui_sop table if available
+        if self._has_cuisop and len(cui_list) > 0:
+            sql_query = " SOPInstanceUID = ANY(ARRAY( SELECT SOPInstanceUID FROM {cuitab} WHERE cui IN ("
+            sql_exe = sql.SQL(sql_query).format(cuitab = sql.Identifier('cui_sop'))
+            sql_exe += sql.SQL(',').join([sql.Literal(n) for n in cui_list])
+            sql_exe += sql.SQL(')))')
+            return sql_exe
+       # Create SQL
         if len(cui_list) > 1:
-            logging.debug('Filtered list of CUI to find: %s' % cui_list)
             # XXX why using public schema for function???
-            cui_list_as_pg_array = ','.join(["'"+x+"'" for x in cui_list])
             sql_query = "(annotation_array_as_text_array(semehr_results, 'cui') && ARRAY[%s])" % cui_list_as_pg_array
             sql_exe = sql.SQL(sql_query)
         elif len(cui_list) > 0:
@@ -407,6 +437,7 @@ class PostgresDocAnn(DocAnn):
             sql_query = "(to_tsvector('english', semehr.annotation_array_as_text(semehr_results, 'pref')) @@ websearch_to_tsquery('english', {qu}))"
             sql_exe = sql.SQL(sql_query).format(qu = sql.Literal(q))
         return sql_exe
+
 
     def query(self, q, collection=None, filter=None, pagination=None, queryDict=None, map_name=None):
         """ Query the database of documents:
@@ -443,6 +474,22 @@ class PostgresDocAnn(DocAnn):
              AND semehr_results->'annotations' @> '[{"cui":q,"negation":"Affirmed"}]' (use)above one too as indexed)
              AND modalities_as_array(semehr_results-->modalities_in_study) @> modalities
              AND semehr_results-->study_date BETWEEN start_date AND end_date ** should index this as a date?
+        """
+
+        """
+        New query SQL to use the cui_sop table
+        SELECT semehr_results FROM semehr_results WHERE
+          SOPInstanceUID IN ( SELECT SOPInstanceUID FROM cui_sop WHERE cui = 'C0205076' )
+        or with a date range:
+        SELECT semehr_results FROM semehr_results WHERE
+          (cast_to_date(semehr_results->>'ContentDate') BETWEEN '2010-01-02' AND '2010-01-10') AND
+          SOPInstanceUID IN ( SELECT SOPInstanceUID FROM cui_sop WHERE cui = 'C0205076' )
+        sql_args = ()
+        sql_str = "SELECT semehr_results FROM {tab} WHERE "
+        sql_str += " SOPInstanceUID IN ("
+        sql_str += "   SELECT SOPInstanceUID FROM {cuitab} WHERE cui = %s "
+        sql_args += (cui,)
+        sql_str += " );"
         """
 
         logging.debug('query %s called with collection %s filter %s pagination %s dict %s' % (q,collection,filter,pagination,queryDict))
@@ -484,11 +531,7 @@ class PostgresDocAnn(DocAnn):
         filter_col = ','.join([x for x in filter_set])
 
         # Connect to database
-        logging.info('Connecting to postgresql')
-        self._pgConnection = psycopg2.connect(host=self._host, user=self._user, password=self._pwd, dbname=self._db)
-        # Set the schema name so it doesn't need to be specified before each table name
-        self._pgConnection.cursor().execute(sql.SQL("SET search_path TO {},public").format(sql.Identifier(self._schema)))
-        self._pgConnection.commit()
+        self.open_database()
 
         # SQL select
         sql_select_exe = sql.SQL('SELECT DISTINCT %s FROM {tab} WHERE ' % filter_col).format(tab = sql.Identifier(collection))
@@ -617,7 +660,7 @@ class PostgresDocAnn(DocAnn):
             fetched = self._pgCursor.fetchmany(size = pagination['limit'])
 
         # If only wanting a single value returned (eg. SOPInstanceUID)
-        # the extract the first element from each tuple returned
+        # then extract the first element from each tuple returned
         # otherwise return the whole tuple and leave the caller to decode it.
         if len(filter_set) == 1:
             rets = [row[0] for row in fetched]
@@ -749,14 +792,18 @@ class MongoDocAnn(DocAnn):
         return query(query)
 
 
-def test_query_or_cui_to_cui_list():
-    pgconf = {
+# ---------------------------------------------------------------------
+# Tests
+
+test_pgconf = {
         "host": "localhost", "user":"semehr", "password":"semehr",
-        "db":"semehr","schema":"semehr",
+        "db":"semehr", "schema":"semehr",
         "ann_collection":"semehr_results",
         "text_collection":"semehr_results"
     }
-    p = PostgresDocAnn(pgconf)
+
+def test_query_or_cui_to_cui_list():
+    p = PostgresDocAnn(test_pgconf)
     assert(p.query_or_cui_to_cui_list(q = "lung") == [])
     assert(p.query_or_cui_to_cui_list(q = "1234567") == [])
     # XXX should check a known snomed maps to a CUI (requires snomed.csv)
@@ -764,6 +811,20 @@ def test_query_or_cui_to_cui_list():
     assert(p.query_or_cui_to_cui_list(q = "C123456,C234567") == ["C123456","C234567"])
     assert(p.query_or_cui_to_cui_list(q = ["C123456","C234567"]) == ["C123456","C234567"])
     # XXX also need to test a named mapping
+
+def test_query_to_sql():
+    # Test converting query to SQL
+    # Sadly this requires an open connection to a database
+    # and assumes the "cui_sop" table exists otherwise you get
+    # a different query syntax.
+    p = PostgresDocAnn(test_pgconf)
+    p.open_database()
+    sql_exe = p.query_or_cui_list_to_sql(["C123456","C234567"])
+    cursor = p._pgConnection.cursor()
+    rc = cursor.mogrify(sql_exe).decode()
+    expected = " SOPInstanceUID = ANY(ARRAY( SELECT SOPInstanceUID FROM \"cui_sop\" WHERE cui IN ('C123456','C234567')))"
+    assert(rc == expected)
+
 
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
