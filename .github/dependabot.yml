@@ -1,0 +1,12 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+  reviewers:
+    - SMI/reviewers
+  groups:
+    python-packages:
+      patterns:
+        - "*"
