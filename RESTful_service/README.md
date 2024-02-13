@@ -57,8 +57,6 @@ sudo ip addr add 10.0.2.135/32 brd + dev eth10 label eth10:0
 
 ## Installation
 
-Create a symbolic link to `utils.py` in the parent directory.
-
 Create a Python3 virtual environment and install the requirements:
 ```
 pip install pymongo

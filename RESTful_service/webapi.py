@@ -5,7 +5,7 @@ import json
 import re
 import logging
 import random
-import utils
+#import utils
 from multiprocessing import Manager
 from pymongo import MongoClient, ASCENDING
 from pymongo.errors import DuplicateKeyError
