@@ -254,9 +254,9 @@ def do_anonymisation_by_conf(conf_file):
     log_level = setttings['logging_level'] if 'logging_level' in setttings else 'INFO'
     log_format = setttings['logging_format'] if 'logging_format' in setttings \
         else '%(name)s %(asctime)s %(levelname)s %(message)s'
-    logging.basicConfig(level=log_level, format=log_format)
     log_file = None if 'logging_file' not in setttings else setttings['logging_file']
     if log_file is not None:
+        logging.basicConfig(level=log_level, format=log_format)
         formatter = logging.Formatter(log_format)
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(log_level)
