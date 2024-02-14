@@ -8,6 +8,8 @@ import SemEHR.ann_post_rules as ann_post_rules
 import SemEHR.study_analyzer as study_analyzer
 import SemEHR.utils as utils
 
+logger = logging.getLogger(__name__)
+
 
 class BasicAnn(object):
     """
@@ -462,10 +464,10 @@ class DocCohort(object):
             if sr:
                 f_did.append((f, sr.group(1)))
         results = []
-        logging.info('collecting results ...')
+        logger.info('collecting results ...')
         utils.multi_thread_tasking(lst=f_did, num_threads=10, process_func=DocCohort.collect_doc_anns_by_types,
                                    args=[self._doc_pth, self.collect_semantic_types, results])
-        logging.info('total anns collected %s' % len(results))
+        logger.info('total anns collected %s' % len(results))
         ret = {'concepts': {}, 'p2c': {}}
         for r in results:
             if r['d'] in self._d2p:
@@ -480,10 +482,10 @@ class DocCohort(object):
                 else:
                     pd[r['cui']] += 1
             else:
-                logging.error('doc %s not in cohort map' % r['d'])
+                logger.error('doc %s not in cohort map' % r['d'])
         utils.save_json_array(ret, output_file)
         utils.save_json_array(DocCohort.result_to_graph(ret), graph_file_path)
-        logging.info('result collected')
+        logger.info('result collected')
 
     @staticmethod
     def collect_doc_anns_by_types(doc_tuple, dir_path, sem_types, container):
@@ -496,7 +498,7 @@ class DocCohort(object):
                     and len(a.ruled_by) == 0:
                 container.append({'d': doc_tuple[1], 'cui': a.cui, 'pref': a.pref})
             else:
-                logging.debug('%s not in %s' % (a.sty, sem_types))
+                logger.debug('%s not in %s' % (a.sty, sem_types))
 
     @staticmethod
     def result_to_graph(result):
@@ -527,7 +529,7 @@ def process_doc_rule(ann_doc, rule_executor, reader, text_key, study_analyzer_in
                     if ann.cui in sc.concept_closure:
                         ann.add_study_concept(sc.name)
                         is_a_concept = True
-                        logging.info('%s [%s, %s] is one %s' % (ann.str, ann.start, ann.end, sc.name))
+                        logger.info('%s [%s, %s] is one %s' % (ann.str, ann.start, ann.end, sc.name))
             else:
                 is_a_concept = True
 
@@ -547,10 +549,10 @@ def process_doc_rule(ann_doc, rule_executor, reader, text_key, study_analyzer_in
                     [s, e] = ann_post_rules.AnnRuleExecutor.relocate_annotation_pos(text,
                                                                                     ann.start, ann.end, ann.str)
                     offset = s - ann.start
-                    logging.debug('offset not matching, relocated from %s,%s to %s,%s, offset: %s' %
+                    logger.debug('offset not matching, relocated from %s,%s to %s,%s, offset: %s' %
                                   (ann.start, ann.end, s, e, offset))
                     context_text = text[sent.start + offset:sent.end + offset]
-                    logging.debug('context text: %s' % context_text)
+                    logger.debug('context text: %s' % context_text)
                 s_before = context_text[:offset_start]
 
                 # gate has an issue with splitting sentences with a question mark in the middle
@@ -569,7 +571,7 @@ def process_doc_rule(ann_doc, rule_executor, reader, text_key, study_analyzer_in
                         s_before = text[prev_s.start + offset:prev_s.end + offset] + s_before
                         anchor_sent = prev_s
                     else:
-                        logging.debug('previous sentence not found %s' % sent.id)
+                        logger.debug('previous sentence not found %s' % sent.id)
                 s_end = context_text[offset_end:]
                 if context_text.endswith('?'):
                     next_s = ann_doc.get_next_sent(sent)
@@ -586,8 +588,8 @@ def process_doc_rule(ann_doc, rule_executor, reader, text_key, study_analyzer_in
 
                 str_orig = ann.str if context_text[offset_start:offset_end].lower() != ann.str.lower() else \
                     context_text[offset_start:offset_end]
-                # logging.debug('%s' % context_text)
-                logging.debug('[%s] <%s> [%s]' % (s_before, str_orig, s_end))
+                # logger.debug('%s' % context_text)
+                logger.debug('[%s] <%s> [%s]' % (s_before, str_orig, s_end))
                 if not ruled:
                     # string orign rules - not used now
                     ruled, case_instance = rule_executor.execute_original_string_rules(str_orig)
@@ -602,9 +604,9 @@ def process_doc_rule(ann_doc, rule_executor, reader, text_key, study_analyzer_in
                 if ruled:
                     for rule in rules:
                         ann.add_ruled_by(rule)
-                    logging.info('%s [%s, %s] ruled by %s' % (str_orig, ann.start, ann.end, rule))
+                    logger.info('%s [%s, %s] ruled by %s' % (str_orig, ann.start, ann.end, rule))
             else:
-                logging.error('sentence not found for ann %s,%s %s' % (ann.start, ann.end, ann.str))
+                logger.error('sentence not found for ann %s,%s %s' % (ann.start, ann.end, ann.str))
             num_concepts += 1
     return num_concepts
 
@@ -654,7 +656,7 @@ def analyse_doc_anns(json_doc, file_key, rule_executor, text_reader, output_fold
     else:
         text = read_obj
     if text is None:
-        logging.error('file [%s] full text not found' % ann_doc.file_key)
+        logger.error('file [%s] full text not found' % ann_doc.file_key)
         return
     reader = WrapperTextReader(text)
     process_doc_rule(ann_doc, rule_executor, reader, None, study_analyzer_inst)
@@ -696,7 +698,7 @@ def load_study_ruler(study_folder, rule_config_file, study_config='study.json'):
         sa = ret['study_analyzer']
         ruler = ret['ruler']
     else:
-        logging.info('no study configuration provided, applying rules to all annotations...')
+        logger.info('no study configuration provided, applying rules to all annotations...')
         ruler = study_analyzer.load_ruler(rule_config_file)
     return {'sa': sa, 'ruler': ruler}
 
@@ -751,7 +753,7 @@ def process_doc_anns(anns_folder, full_text_folder, rule_config_file, output_fol
                       es_inst, es_output_index, es_output_doc,
                       sa])
 
-    logging.info('post processing of ann docs done')
+    logger.info('post processing of ann docs done')
 
 
 def db_populate_patient_result(container, pid, doc_ann_sql_temp, doc_ann_pks, dbcnn_file, concept_list,
@@ -777,7 +779,7 @@ def fix_escaped_issue(s):
             fiz.append(fix)
     new_s = s
     if len(fiz) > 0:
-        logging.debug('fixes needed: %s' % fiz)
+        logger.debug('fixes needed: %s' % fiz)
         new_s = ''
         last_pos = 0
         for f in fiz:
@@ -798,7 +800,7 @@ def proc_init_container():
 
 
 def proc_final_collect(container, results):
-    logging.debug('collecting %s' % len(container))
+    logger.debug('collecting %s' % len(container))
     for r in container:
         results.append(r)
 

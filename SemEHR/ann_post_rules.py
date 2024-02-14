@@ -4,6 +4,8 @@ import re
 import SemEHR.utils as utils
 import functools # for cmp_to_key
 
+logger = logging.getLogger(__name__)
+
 _text_window = 150
 _head_text_window_size = 200
 
@@ -57,7 +59,7 @@ class Rule(object):
                 reg_p = re.compile(ptn, re.IGNORECASE)
             self._reg_ptns.append(reg_p)
         except Exception:
-            logging.error('regs error: [%s]' % ptn)
+            logger.error('regs error: [%s]' % ptn)
             exit(1)
 
 
@@ -162,12 +164,12 @@ class AnnRuleExecutor(object):
 
             if more_context_sents is not None:
                 if len(r.more_context_sents) > 0:
-                    logging.debug('rule %s more context %s, on %s' % (r.name, r.more_context_sents, more_context_sents))
+                    logger.debug('rule %s more context %s, on %s' % (r.name, r.more_context_sents, more_context_sents))
                     if -1 in r.more_context_sents and 'prev' in more_context_sents:
                         s_compare = '%s %s' % (more_context_sents['prev'], s_compare)
                     if 1 in r.more_context_sents and 'next' in more_context_sents:
                         s_compare = '%s %s' % (s_compare, more_context_sents['next'])
-                    logging.debug('s_compare [%s]' % s_compare)
+                    logger.debug('s_compare [%s]' % s_compare)
             # s_compare = s_compare.replace('\n', ' ')
             for reg_p in r.reg_patterns:
                 m = reg_p.match(s_compare)
@@ -176,7 +178,7 @@ class AnnRuleExecutor(object):
                     matched.append(m.group(0))
                     rule_name = r.name
                     filtered = True
-                    logging.debug('%s matched %s' % (s_compare, reg_p.pattern))
+                    logger.debug('%s matched %s' % (s_compare, reg_p.pattern))
                     break
             if rule_name is not None:
                 matched_rules.append(rule_name)
@@ -198,7 +200,7 @@ class AnnRuleExecutor(object):
             try:
                 reg_p = re.compile(r)
             except Exception:
-                logging.error('regs error: [%s]' % r['regs'])
+                logger.error('regs error: [%s]' % r['regs'])
                 exit(1)
             # print 'matching %s on %s' % (reg_p, s_compare)
             m = reg_p.match(s_compare)
@@ -212,18 +214,18 @@ class AnnRuleExecutor(object):
     def load_rule_config(self, config_file):
         rule_config = utils.load_json_data(config_file)
         r_path = rule_config['rules_folder']
-        logging.debug('loading rules from [%s]' % r_path)
+        logger.debug('loading rules from [%s]' % r_path)
         for rf in rule_config['active_rules']:
             for r in utils.load_json_data(join(r_path, rf)):
                 self.add_filter_rule(r['offset'], r['regs'], rule_name=rf,
                                      case_sensitive=r['case_sensitive'] if 'case_sensitive' in r else False,
                                      containing_pattern=r['containing_pattern'] if 'containing_pattern' in r else False,
                                      more_context_sents=r['more_context_sents'] if 'more_context_sents' in r else [])
-            logging.debug('%s loaded' % rf)
+            logger.debug('%s loaded' % rf)
         if 'osf_rules' in rule_config:
             for osf in rule_config['osf_rules']:
                 self.add_original_string_filters(utils.load_json_data(join(r_path, osf)))
-                logging.debug('original string filters from [%s] loaded' % osf)
+                logger.debug('original string filters from [%s] loaded' % osf)
         if 'skip_term_setting' in rule_config:
             self.skip_terms = utils.load_json_data(rule_config['skip_term_setting'])
 

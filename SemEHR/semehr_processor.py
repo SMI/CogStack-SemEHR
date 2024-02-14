@@ -12,6 +12,9 @@ import SemEHR.utils as utils
 import SemEHR.docanalysis as docanalysis
 
 
+logger = logging.getLogger(__name__)
+
+
 class ProcessSetting(object):
     def __init__(self, setting_file):
         self.__conf = None
@@ -136,7 +139,7 @@ def produce_yodie_config(settings, data_rows, docid_path):
         input.set('user', input_db['user'])
         input.set('password', input_db['password'])
         input.set('get_doc_sql_prefix', input_db['get_doc_sql_prefix'])
-        logging.info('using docs from sql server [%s]' % settings.get_attr(['yodie', 'input_dbconn_setting_file']))
+        logger.info('using docs from sql server [%s]' % settings.get_attr(['yodie', 'input_dbconn_setting_file']))
     elif settings.get_attr(['yodie', 'input_source']) == "files":
         dir_path = settings.get_attr(['yodie', 'input_doc_file_path'])
         num_docs = len([f for f in listdir(dir_path) if isfile(join(dir_path, f))])
@@ -146,7 +149,7 @@ def produce_yodie_config(settings, data_rows, docid_path):
         documentEnumerator = ET.SubElement(documents, "documentEnumerator")
         documentEnumerator.set('class', 'gate.cloud.io.file.FileDocumentEnumerator')
         documentEnumerator.set('dir', settings.get_attr(['yodie', 'input_doc_file_path']))
-        logging.info('using docs from folder [%s]' % dir_path)
+        logger.info('using docs from folder [%s]' % dir_path)
     else:
         input.set('class', 'kcl.iop.brc.core.kconnect.crisfeeder.ESDocInputHandler')
         input.set('es_doc_url', '%s/%s/%s' % (
@@ -155,7 +158,7 @@ def produce_yodie_config(settings, data_rows, docid_path):
         input.set('main_text_field', '%s' % settings.get_attr(['semehr', 'full_text_text_field']))
         input.set('doc_guid_field', '%s' % settings.get_attr(['semehr', 'full_text_doc_id']))
         input.set('doc_created_date_field', '%s' % settings.get_attr(['semehr', 'full_text_doc_date']))
-        logging.info('using docs from elasticsearch [%s]' % settings.get_attr(['semehr', 'full_text_index']))
+        logger.info('using docs from elasticsearch [%s]' % settings.get_attr(['semehr', 'full_text_index']))
 
     output = ET.SubElement(batch, "output")
     if settings.get_attr(['yodie', 'output_destination']) == "sql":
@@ -177,19 +180,19 @@ def produce_yodie_config(settings, data_rows, docid_path):
             output.set('singleAnnSQLTemplate', settings.get_attr(['yodie', 'singleAnnSQLTemplate']))
         if settings.get_attr(['yodie', 'output_concept_filter_file']) is not None:
             output.set('concept_filter', '%s' % settings.get_attr(['yodie', 'output_concept_filter_file']))
-        logging.info('saving annotations to sql [%s]' % settings.get_attr(['yodie', 'output_dbconn_setting_file']))
+        logger.info('saving annotations to sql [%s]' % settings.get_attr(['yodie', 'output_dbconn_setting_file']))
     else:
         output.set('class', 'kcl.iop.brc.core.kconnect.outputhandler.YodieOutputHandler')
         output.set('output_folder', '%s' % settings.get_attr(['yodie', 'output_file_path']))
         output.set('file_based', '%s' % settings.get_attr(['yodie', 'use_file_based']))
-        logging.info('saving annotations to folder [%s]' % settings.get_attr(['yodie', 'output_file_path']))
+        logger.info('saving annotations to folder [%s]' % settings.get_attr(['yodie', 'output_file_path']))
 
     if settings.get_attr(['yodie', 'input_source']) != "files":
-        logging.info('doing yodie with %s documents, saved to %s...' %
+        logger.info('doing yodie with %s documents, saved to %s...' %
                      (str(len(data_rows)), docid_path))
         if len(data_rows) > 0:
             # save doc ids to text file for input to bioyodie
-            logging.info('saving doc ids to [%s]' % docid_path)
+            logger.info('saving doc ids to [%s]' % docid_path)
             utils.save_string('\n'.join([str(r['docid']) for r in data_rows]), docid_path)
         elif os.path.exists(docid_path):
             num_docs = len(utils.read_text_file(docid_path))
@@ -330,8 +333,8 @@ def process_semehr(config_file):
     log_format = '%(name)s %(asctime)s %(levelname)s %(message)s' if ps.get_attr(['logging', 'format']) is None \
         else ps.get_attr(['logging', 'format'])
     log_file = None if ps.get_attr(['logging', 'file']) is None else ps.get_attr(['logging', 'file'])
-    logging.basicConfig(level=log_level, format=log_format)
     if log_file is not None:
+        logging.basicConfig(level=log_level, format=log_format)
         formatter = logging.Formatter(log_format)
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(log_level)
@@ -342,7 +345,7 @@ def process_semehr(config_file):
     # initialise the jobstatus class instance
     job_file = join(ps.get_attr(['job', 'job_status_file_path']),
                     'semehr_job_status_%s.json' % ps.get_attr(['job', 'job_id']))
-    logging.info('[SemEHR-step] using job status file %s' % job_file)
+    logger.info('[SemEHR-step] using job status file %s' % job_file)
     job_status = JobStatus(job_file)
     job_status.job_start()
 
@@ -367,18 +370,18 @@ def process_semehr(config_file):
         if ps.get_attr(['job', 'yodie']) == 'yes':
             docid_path = '%s/%s_docids.txt' % (
                 ps.get_attr(['yodie', 'input_doc_file_path']), ps.get_attr(['job', 'job_id']))
-            logging.info('[SemEHR-step] doing yodie')
+            logger.info('[SemEHR-step] doing yodie')
             # 1. do bio-yodie pipeline
             # 1.1 prepare the configuration file
             num_docs = produce_yodie_config(ps, data_rows, docid_path)
             if num_docs == 0:
-                logging.info('[SemEHR-step-end] nothing to process, NLP step done')
+                logger.info('[SemEHR-step-end] nothing to process, NLP step done')
             else:
-                logging.info('total number of docs %s' % num_docs)
+                logger.info('total number of docs %s' % num_docs)
                 # 1.2 set the env variables
                 set_sys_env(ps)
                 # 1.3 clear ann output folder
-                logging.info('clearing %s ...' % ps.get_attr(['yodie', 'output_file_path']))
+                logger.info('clearing %s ...' % ps.get_attr(['yodie', 'output_file_path']))
                 clear_folder(ps.get_attr(['yodie', 'output_file_path']))
                 # 1.3 run bio-yodie
                 os.chdir(ps.get_attr(['yodie', 'gcp_run_path']))
@@ -406,21 +409,21 @@ def process_semehr(config_file):
                                     '-Dat.ofai.gate.modularpipelines.configFile="%s/bio-yodie-1-2-1/main-bio/main-bio.config.yaml" '
                                     % ps.get_attr(['env', 'yodie_path']),
                                     ])
-                logging.debug('executing the following command to start NLP...')
-                logging.info(cmd)
+                logger.debug('executing the following command to start NLP...')
+                logger.info(cmd)
                 p = Popen(cmd, shell=True, stderr=STDOUT)
                 p.wait()
 
                 if 0 != p.returncode:
                     job_status.set_status(False)
                     job_status.save()
-                    logging.error('ERROR doing the NLP, stopped with a coide [%s]' % p.returncode)
+                    logger.error('ERROR doing the NLP, stopped with a coide [%s]' % p.returncode)
                     exit(p.returncode)
                 else:
-                    logging.info('[SemEHR-step-end] NLP step done')
+                    logger.info('[SemEHR-step-end] NLP step done')
                 semehr_path = None
                 if 'semehr_path' in os.environ:
-                    logging.info('changing back to semehr_path: %s' % os.environ['semehr_path'])
+                    logger.info('changing back to semehr_path: %s' % os.environ['semehr_path'])
                     semehr_path = os.environ['semehr_path']
                 else:
                     semehr_path = ps.get_attr(['env', 'semehr_path'])
@@ -437,9 +440,9 @@ def process_semehr(config_file):
 
         # 4. do SemEHR document annotation analysis (post processing)
         if ps.get_attr(['job', 'doc_analysis']) == 'yes':
-            logging.info('[SemEHR-step]doing SemEHR annotation analysis...')
+            logger.info('[SemEHR-step]doing SemEHR annotation analysis...')
             do_semehr_doc_anns_analysis(settings=ps)
-            logging.info('[SemEHR-step-end] doc_analysis step done')
+            logger.info('[SemEHR-step-end] doc_analysis step done')
 
         # 4.5 do SemEHR patient level index
         if ps.get_attr(['job', 'patient_index']) == 'yes':
@@ -447,21 +450,21 @@ def process_semehr(config_file):
 
         # 5. do populate results for a research study
         if ps.get_attr(['job', 'populate_cohort_result']) == 'yes':
-            logging.info('[SemEHR-step]doing SemEHR cohort result extraction...')
+            logger.info('[SemEHR-step]doing SemEHR cohort result extraction...')
             populate_cohort_results(settings=ps)
-            logging.info('[SemEHR-step-end] populate_cohort_result step done')
+            logger.info('[SemEHR-step-end] populate_cohort_result step done')
 
         # 6. do collect cohort doc based results for a research study
         if ps.get_attr(['job', 'cohort_doc_collection']) == 'yes':
-            logging.info('[SemEHR-step]doing SemEHR cohort doc based collection...')
+            logger.info('[SemEHR-step]doing SemEHR cohort doc based collection...')
             collect_cohort_doc_results(settings=ps, doc2pid=doc2pid)
-            logging.info('[SemEHR-step-end] collect_cohort_doc_results step done')
+            logger.info('[SemEHR-step-end] collect_cohort_doc_results step done')
 
         job_status.set_status(True)
         job_status.save()
-        logging.info('[SemEHR-process-end] all done')
+        logger.info('[SemEHR-process-end] all done')
     except Exception as e:
-        logging.error('[SemEHR-process-ERROR] Failed to do SemEHR process %s' % str(e))
+        logger.error('[SemEHR-process-ERROR] Failed to do SemEHR process %s' % str(e))
         job_status.set_status(False)
         job_status.save()
 

@@ -2,6 +2,8 @@ import logging
 import SemEHR.utils as utils
 import re2 as re
 
+logger = logging.getLogger(__name__)
+
 
 class ExtractRule(object):
     """
@@ -47,8 +49,8 @@ class ExtractRule(object):
                             i += 1
             except Exception as ex:
                 import traceback
-                logging.error(traceback.format_exc())
-                print(ex, ro['pattern'])
+                logger.error(traceback.format_exc())
+                print(ex, ro['pattern'], file=sys.stderr)
         return results
 
     def do_letter_parsing(self, full_text):

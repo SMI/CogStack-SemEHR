@@ -7,6 +7,8 @@ import xml.etree.ElementTree as ET
 from SemEHR.ann_post_rules import AnnRuleExecutor
 import SemEHR.utils as utils
 
+logger = logging.getLogger(__name__)
+
 
 class StudyConcept(object):
 
@@ -216,13 +218,13 @@ def load_study_settings(folder, umls_instance,
         sa = StudyAnalyzer(fn)
         if isfile(join(folder, 'label2concept.tsv')):
             # using tsv file if exists
-            logging.info('loading study concepts from tsv file...')
+            logger.info('loading study concepts from tsv file...')
             lines = utils.read_text_file(join(folder, 'label2concept.tsv'))
             scs = []
             for l in lines:
                 arr = l.split('\t')
                 if len(arr) != 2:
-                    logging.error('line [%s] not parsable' % l)
+                    logger.error('line [%s] not parsable' % l)
                     continue
                 t = arr[0]
                 c = arr[1]
@@ -232,9 +234,9 @@ def load_study_settings(folder, umls_instance,
                 tc[t] = {'closure': 1, 'mapped': c}
                 sc.term_to_concept = tc
                 scs.append(sc)
-                logging.debug('study concept [%s]: %s, %s' % (sc.name, sc.term_to_concept, sc.concept_closure))
+                logger.debug('study concept [%s]: %s, %s' % (sc.name, sc.term_to_concept, sc.concept_closure))
             sa.study_concepts = scs
-            logging.info('study concepts loaded')
+            logger.info('study concepts loaded')
         elif isfile(join(folder, 'exact_concepts_mappings.json')):
             concept_mappings = utils.load_json_data(join(folder, 'exact_concepts_mappings.json'))
             concept_to_closure = None
@@ -249,7 +251,7 @@ def load_study_settings(folder, umls_instance,
                 t_c[t] = [concept_mappings[t]]
                 sc.gen_concept_closure(term_concepts=t_c, concept_to_closure=concept_to_closure)
                 scs.append(sc)
-                logging.debug(sc.concept_closure)
+                logger.debug(sc.concept_closure)
             sa.study_concepts = scs
             sa.serialise(join(folder, 'study_analyzer.pickle'))
         elif isfile(join(folder, 'manual_mapped_concepts.json')):
@@ -262,7 +264,7 @@ def load_study_settings(folder, umls_instance,
                 tc[t] = mapped_scs[t]['tc']
                 sc.term_to_concept = tc
                 scs.append(sc)
-                logging.debug('study concept [%s]: %s, %s' % (sc.name, sc.term_to_concept, sc.concept_closure))
+                logger.debug('study concept [%s]: %s, %s' % (sc.name, sc.term_to_concept, sc.concept_closure))
             sa.study_concepts = scs
         else:
             concepts = utils.load_json_data(join(folder, 'study_concepts.json'))
@@ -270,16 +272,16 @@ def load_study_settings(folder, umls_instance,
                 scs = []
                 for name in concepts:
                     scs.append(StudyConcept(name, concepts[name], umls_instance=umls_instance))
-                    logging.debug('%s, %s' % (name, concepts[name]))
+                    logger.debug('%s, %s' % (name, concepts[name]))
             sa.study_concepts = scs
             sa.serialise(join(folder, 'study_analyzer.pickle'))
 
     # get filtered concepts only, if filter exists
     if concept_filter_file is not None:
-        logging.debug('before removal, the concept length is: %s' % len(sa.study_concepts))
+        logger.debug('before removal, the concept length is: %s' % len(sa.study_concepts))
         concept_names = utils.load_json_data(concept_filter_file)
         sa.retain_study_concepts(concept_names)
-        logging.debug('after removal: %s' % len(sa.study_concepts))
+        logger.debug('after removal: %s' % len(sa.study_concepts))
 
     # compute disjoint concepts
     if do_disjoint_computing:
@@ -290,7 +292,7 @@ def load_study_settings(folder, umls_instance,
         for sc in sa.study_concepts:
             sc2closure[sc.name] = list(sc.concept_closure)
         utils.save_json_array(sc2closure, join(folder, 'sc2closure.json'))
-        logging.debug('sc2closure.json generated in %s' % folder)
+        logger.debug('sc2closure.json generated in %s' % folder)
 
     if isfile(join(folder, 'study_options.json')):
         sa.study_options = utils.load_json_data(join(folder, 'study_options.json'))
@@ -309,9 +311,9 @@ def load_study_settings(folder, umls_instance,
                 merged_mappings['(%s) %s' % (c.name, t)] = c.term_to_concept[t]
         # print c.name, c.term_to_concept, c.concept_closure
         # print json.dumps(list(c.concept_closure))
-    # logging.debug('print merged mappings...')
+    # logger.debug('print merged mappings...')
     # print json.dumps(merged_mappings)
-    # logging.debug(len(study_concept_list))
+    # logger.debug(len(study_concept_list))
     utils.save_string('\n'.join(study_concept_list), join(folder, 'all_concepts.txt'))
 
     if export_study_concept_only:
@@ -359,7 +361,7 @@ def study(folder, cohort_name, sql_config_file, db_conn_file, umls_instance,
                                              sem_idx_setting_file,
                                              retained_patients_filter,
                                              filter_obj=filter_obj)
-    logging.info('done')
+    logger.info('done')
 
 
 def run_study(folder_path, no_sql_filter=None):
@@ -390,7 +392,7 @@ def run_study(folder_path, no_sql_filter=None):
               skip_closure_relations=skip_closure_relations
               )
     else:
-        logging.error('study.json not found in the folder')
+        logger.error('study.json not found in the folder')
 
 
 if __name__ == "__main__":
