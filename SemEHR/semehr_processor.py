@@ -17,9 +17,14 @@ logger = logging.getLogger(__name__)
 
 class ProcessSetting(object):
     def __init__(self, setting_file):
-        self.__conf = None
-        self.__file = setting_file
-        self.load_data()
+        if isinstance(setting_file, str):
+            self.__conf = None
+            self.__file = setting_file
+            self.load_data()
+        elif isinstance(setting_file, dict):
+            self.__conf = setting_file
+        else:
+            raise TypeError('ProcessSetting must be given a str (filename) or dict (settings)')
 
     def load_data(self):
         self.__conf = utils.load_json_data(self.__file)
