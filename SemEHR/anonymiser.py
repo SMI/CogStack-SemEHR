@@ -230,7 +230,12 @@ def dir_anonymisation(folder, rule_files, rule_group):
 
 def do_anonymisation_by_conf(conf_file):
     global use_spacy, spacy_nlp
-    setttings = utils.load_json_data(conf_file)
+    if isinstance(conf_file, str):
+        setttings = utils.load_json_data(conf_file)
+    elif isinstance(conf_file, dict):
+        setttings = conf_file
+    else:
+        raise TypeError('expected a dict or a str')
     text_foler = setttings['text_data_path']
     rules_folder = setttings['rules_folder']
     rule_group = setttings['rule_group_name']
@@ -244,7 +249,6 @@ def do_anonymisation_by_conf(conf_file):
     if use_spacy:
         import spacy
         spacy_nlp = spacy.load(setttings.get('spacy_model', 'en_core_web_sm'))
-
 
     # logging setup
     log_level = setttings['logging_level'] if 'logging_level' in setttings else 'INFO'
