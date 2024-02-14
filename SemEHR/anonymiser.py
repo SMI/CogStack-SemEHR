@@ -4,14 +4,12 @@ from os.path import isfile, join
 from os import listdir
 import re
 import sys
-
-cdir = os.path.dirname(os.path.realpath(__file__))
-pdir = os.path.dirname(cdir)
-sys.path.append(pdir)
-
 from SemEHR.rule_extractor import ExtractRule
 from SemEHR.anony_ann_converter import AnnConverter
 import SemEHR.utils as utils
+
+
+logger = logging.getLogger(__name__)
 
 
 def is_valid_place_holder(s):
@@ -79,8 +77,9 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
     # rets = do_letter_parsing(text)
     rets = anonymis_inst.do_full_text_parsing(text, rule_group=rule_group)
     if rets[1] < 0 or rets[2] < 0:
+        # in practice this can never occur, see rule_extractor.py
         failed_docs.append(doc_id)
-        logging.info('````````````` %s failed' % doc_id)
+        logger.error('failed to anonymise %s' % doc_id)
         return None, None
     else:
         sen_data = rets[0]
@@ -92,14 +91,14 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
                 sen_data = []
                 break
             if 'name' in d['attrs']:
-                logging.debug('removing %s [%s] [%s]' % (d['attrs']['name'], d['type'], d['rule']))
+                logger.debug('removing %s [%s] [%s]' % (d['attrs']['name'], d['type'], d['rule']))
                 start = d['pos'][0] + d['attrs']['full_match'].find(d['attrs']['name'])
                 if is_valid_place_holder(d['attrs']['name']):
                     anonymised_text = ExtractRule.do_replace(anonymised_text, start, d['attrs']['name'])
                     # 'x' * len(d['attrs']['name']))
                 sent_container.append({'doc': doc_id, 'pos':d['pos'][0], 'start':start, 'type': d['type'], 'sent': d['attrs']['name'], 'rule': d['rule']})
             if 'number' in d['attrs']:
-                logging.debug('removing %s ' % d['attrs']['number'])
+                logger.debug('removing %s ' % d['attrs']['number'])
                 if is_valid_place_holder(d['attrs']['number']):
                     anonymised_text = ExtractRule.do_replace(anonymised_text, d['pos'][0], d['attrs']['number'])
                 sent_container.append({'doc': doc_id, 'pos':d['pos'][0], 'start': d['pos'][0], 'type': d['type'], 'sent': d['attrs']['number'], 'rule':d['rule']})
@@ -122,6 +121,7 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     if len(s) == 0:
         s = text
         # let's do nothing if no text fields were found
+        # XXX make this an option
         return
     s = s.replace('\r', ' ')
     # Collect all sensitive phrases, and
@@ -150,16 +150,18 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
 
     # save eHost ann
     if do_ann:
+        # SMI not used
         # XXX I have introduced a bug here, the XML just accumulates records after each file... (was: cur_sent_container,fn)
         ehost_data = AnnConverter.anonymisation_to_eHost(sent_container, fn)
         utils.save_string(s, join(anonymised_folder, fn))
         utils.save_string(ehost_data, join(anonymised_folder, '%s.knowtator.xml' % fn))
     else:
+        # SMI used
         for v in s2repls:
             ptn = re.compile(re.escape(v), re.IGNORECASE)
             anonymised_text = ptn.sub('Q' * len(v), anonymised_text)
         utils.save_string(anonymised_text, join(anonymised_folder, fn))
-    logging.info('%s anonymised' % fn)
+    logger.info('%s anonymised' % fn)
 
 
 def anonymise_files_in_folder_mt(input_folder, anonymised_folder, rule_file, sent_data_file, sent_data_output,
@@ -225,7 +227,7 @@ def dir_anonymisation(folder, rule_files, rule_group):
     sent_data = []
     for f in onlyfiles:
         text = utils.read_text_file_as_string(join(folder, f))
-        logging.info(anonymise_doc(f, text, container, anonymis_inst, sent_data, rule_group=rule_group))
+        logger.info(anonymise_doc(f, text, container, anonymis_inst, sent_data, rule_group=rule_group))
 
 
 def do_anonymisation_by_conf(conf_file):
@@ -281,6 +283,6 @@ def do_anonymisation_by_conf(conf_file):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print('the syntax is [python anonymiser.py CONF_SETTINGS_FILE_PATH]')
+        print('Usage: %s python anonymiser.py CONF_SETTINGS_FILE_PATH' % sys.argv[0], file=sys.stderr)
     else:
         do_anonymisation_by_conf(sys.argv[1])
