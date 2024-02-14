@@ -1,0 +1,36 @@
+{
+  "env":
+  {
+    "java_home": "",
+    "gcp_home": "/opt/gcp/gcp-2.5-18658",
+    "gate_home": "/opt/gcp/gate",
+    "yodie_path": "/opt/gcp",
+    "ukb_home": "/opt/gcp/ukb",
+    "semehr_path": "/tmp/semehr"
+  },
+  "yodie":
+  {
+    "gcp_run_path": "/opt/CogStack-SemEHR/gcp",
+    "input_doc_file_path": ".",
+    "config_xml_path": ".",
+    "output_file_path": ".",
+    "memory": "8192M",
+    "thread_num": "20"
+  },
+  "doc_ann_analysis":
+  {
+    "ann_docs_path": "",
+    "output_fn_pattern": "%s.json",
+    "full_text_fn_ptn": "%s.txt",
+    "full_text_folder": "",
+    "output_folder": ""
+  },
+  "job":
+  {
+    "job_status_file_path": "/tmp/semehr"
+  },
+  "logging":
+  {
+    "file": "semehr_processor.log"
+  }
+}

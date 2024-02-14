@@ -1,9 +1,9 @@
-import xml.etree.ElementTree as ET
+import csv
 import datetime
 from os import listdir
 from os.path import isfile, join
-import utils
-import csv
+import xml.etree.ElementTree as ET
+import SemEHR.utils as utils
 
 
 class AnnConverter(object):

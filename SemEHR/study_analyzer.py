@@ -1,11 +1,11 @@
-import utils
-from os.path import isfile, join, split
 import joblib as jl
-from ann_post_rules import AnnRuleExecutor
-import sys
-import xml.etree.ElementTree as ET
-import urllib3
 import logging
+from os.path import isfile, join, split
+import sys
+import urllib3
+import xml.etree.ElementTree as ET
+from SemEHR.ann_post_rules import AnnRuleExecutor
+import SemEHR.utils as utils
 
 
 class StudyConcept(object):

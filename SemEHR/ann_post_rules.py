@@ -1,7 +1,7 @@
-import re
-import utils
-from os.path import join
 import logging
+from os.path import join
+import re
+import SemEHR.utils as utils
 import functools # for cmp_to_key
 
 _text_window = 150

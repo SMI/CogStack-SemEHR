@@ -1,12 +1,12 @@
-import utils
+import json
+import logging
+import multiprocessing
+import re
 from os.path import join, isfile, split, splitext
 from os import listdir
-import logging
-import study_analyzer
-import json
-import re
-import ann_post_rules
-import multiprocessing
+import SemEHR.ann_post_rules as ann_post_rules
+import SemEHR.study_analyzer as study_analyzer
+import SemEHR.utils as utils
 
 
 class BasicAnn(object):

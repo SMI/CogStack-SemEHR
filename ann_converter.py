@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-import docanalysis as da
 import xml.etree.ElementTree as ET
 import xml.dom.minidom
 import datetime
-import utils
 from os.path import join, isfile
 from os import listdir
 import logging
-import sys
-import ann_post_rules
 import re
+import sys
+import SemEHR.ann_post_rules as ann_post_rules
+from SemEHR.docanalysis import SemEHRAnnDoc
+import SemEHR.utils as utils
 
 
 class AnnConverter(object):
 
     @staticmethod
     def load_ann(ann_json, file_key):
-        d = da.SemEHRAnnDoc(file_key=file_key)
+        d = SemEHRAnnDoc(file_key=file_key)
         d.load(ann_json)
         return d
 

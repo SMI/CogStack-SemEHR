@@ -1,9 +1,6 @@
-hashlib
-http.server
 joblib
-psycopg2
+psycopg2_binary
 pymongo
 pyre2_updated
 spacy
-urllib.request
 urllib3
