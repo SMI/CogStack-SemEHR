@@ -445,7 +445,7 @@ def process_semehr(config_file):
 
         # 4. do SemEHR document annotation analysis (post processing)
         if ps.get_attr(['job', 'doc_analysis']) == 'yes':
-            logger.info('[SemEHR-step]doing SemEHR annotation analysis...')
+            logger.info('[SemEHR-step] doing SemEHR annotation analysis...')
             do_semehr_doc_anns_analysis(settings=ps)
             logger.info('[SemEHR-step-end] doc_analysis step done')
 
@@ -455,13 +455,13 @@ def process_semehr(config_file):
 
         # 5. do populate results for a research study
         if ps.get_attr(['job', 'populate_cohort_result']) == 'yes':
-            logger.info('[SemEHR-step]doing SemEHR cohort result extraction...')
+            logger.info('[SemEHR-step] doing SemEHR cohort result extraction...')
             populate_cohort_results(settings=ps)
             logger.info('[SemEHR-step-end] populate_cohort_result step done')
 
         # 6. do collect cohort doc based results for a research study
         if ps.get_attr(['job', 'cohort_doc_collection']) == 'yes':
-            logger.info('[SemEHR-step]doing SemEHR cohort doc based collection...')
+            logger.info('[SemEHR-step] doing SemEHR cohort doc based collection...')
             collect_cohort_doc_results(settings=ps, doc2pid=doc2pid)
             logger.info('[SemEHR-step-end] collect_cohort_doc_results step done')
 
