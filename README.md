@@ -10,6 +10,7 @@ Contents:
 
 ## Documentation
 
+* [Library](doc/library.md)
 * [REST API](RESTful_service/README.md)
 * [REST API Dockerfile](Dockerfile.md)
 * [REST API images](RESTful_service/vis/images/README.md) and [REST API css](RESTful_service/vis/css/images/README.md)
