@@ -129,8 +129,9 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     s2repls = []
     for f in sents:
         s2repls.append(sents[f].strip())
-        # split into words and keep each word that is 4 or more characters
-        arr = [v for v in sents[f].strip().split(' ') if len(v) > 3]
+        # Split into words and keep each word that is 4 or more characters.
+        # Surround with '\b' to ensure each is a unique word (don't find 'a' within a word!)
+        arr = ['\\b' +v +'\\b' for v in sents[f].strip().split(' ') if len(v) > 3]
         s2repls += arr
 
     cur_sent_container = []
