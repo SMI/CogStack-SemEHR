@@ -55,7 +55,7 @@
         "data_type": "clinic"
       },
       {
-        "pattern": "\\b(?:transfer|transferred|discharge|discharged) (?:to|from)(?: the){0,1} (([^\\s]*))\\b",
+        "pattern": "\\b(?:transfer|transferred|discharge|discharged) (?:to|from)(?: the| a){0,1} (([^\\s]*))\\b",
         "flags": [
           "multiline",
           "ignorecase"
