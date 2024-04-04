@@ -46,6 +46,7 @@ class ExtractRule(object):
                     if 'data_labels' in ro:
                         for attr in ro['data_labels']:
                             ret['attrs'][attr] = m.group(i)
+                            ret['attrs'][attr + '_start'] = m.start(i)
                             i += 1
             except Exception as ex:
                 import traceback

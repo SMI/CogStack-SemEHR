@@ -92,13 +92,14 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
             break
         if 'name' in d['attrs']:
             logger.debug('removing %s [%s] [%s]' % (d['attrs']['name'], d['type'], d['rule']))
-            start = d['pos'][0] + d['attrs']['full_match'].find(d['attrs']['name'])
+            start = d['attrs']['name_start']
             if is_valid_place_holder(d['attrs']['name']):
                 anonymised_text = ExtractRule.do_replace(anonymised_text, start, d['attrs']['name'])
                 # 'x' * len(d['attrs']['name']))
             sent_container.append({'doc': doc_id, 'pos':d['pos'][0], 'start':start, 'type': d['type'], 'sent': d['attrs']['name'], 'rule': d['rule']})
         if 'number' in d['attrs']:
             logger.debug('removing %s ' % d['attrs']['number'])
+            # XXX should we change 'start' in the same way as for 'name' above?
             if is_valid_place_holder(d['attrs']['number']):
                 anonymised_text = ExtractRule.do_replace(anonymised_text, d['pos'][0], d['attrs']['number'])
             sent_container.append({'doc': doc_id, 'pos':d['pos'][0], 'start': d['pos'][0], 'type': d['type'], 'sent': d['attrs']['number'], 'rule':d['rule']})
@@ -107,6 +108,7 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
         for ent in spacy_doc.ents:
             if ent.label_ == "PERSON":
                 sent_container.append({'doc': doc_id, 'pos':ent.start_char, 'start': ent.start_char, 'type': 'PERSON', 'sent': ent.text, 'rule': 'spacy'})
+                # XXX what about updating anonymised_text, sen_data here?
     return anonymised_text, sen_data
 
 
