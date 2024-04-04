@@ -638,10 +638,12 @@ class PostgresDocAnn(DocAnn):
             if seriesinstanceuids:
                 # SeriesInstanceUID is a JSON element
                 sarr = ",".join(["('"+ inst +"')" for inst in seriesinstanceuids])
+                # XXX do we need to cast? (semehr_results->>'SeriesInstanceUID')::text
                 sql_query_filter += " AND ((semehr_results->>'SeriesInstanceUID') IN (VALUES %s)) " % sarr
             if studyinstanceuids:
                 # StudyInstanceUID is a JSON element
                 sarr = ",".join(["('"+ inst +"')" for inst in studyinstanceuids])
+                # XXX do we need to cast? (semehr_results->>'StudyInstanceUID')::text
                 sql_query_filter += " AND ((semehr_results->>'StudyInstanceUID') IN (VALUES %s)) " % sarr
             sql_query_filter_exe = sql.SQL(sql_query_filter).format(sd = sql.Literal(start_date), ed=sql.Literal(end_date))
             sql_exe = sql_select_exe + sql_query_term_exe + sql_query_filter_exe

@@ -73,6 +73,9 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
     :param sent_container: returns list [{doc, pos, start, type, sent}, ...]
     :param rule_group: passed to the anonymis_inst method do_full_text_parsing
     :return: sent_container updated, returns tuple (anonymised text, sen_data)
+    WARNINGS:
+    the anonymised text returned is not fully anonymised as there are
+    additional entries in sent_container that were not redacted.
     """
     # rets = do_letter_parsing(text)
     rets = anonymis_inst.do_full_text_parsing(text, rule_group=rule_group)
@@ -128,6 +131,8 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     s = s.replace('\r', ' ')
     # Collect all sensitive phrases, and
     # split into sensitive words for words >= 4 chars long
+    # s2repls will contain an array of regex looking for names, and
+    # each will be surrounded by \b to ensure not found in middle of words.
     s2repls = []
     for f in sents:
         s2repls.append(sents[f].strip())
@@ -136,13 +141,19 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
         arr = ['\\b' +v +'\\b' for v in sents[f].strip().split(' ') if len(v) > 3]
         s2repls += arr
 
+    # Update sent_container with entities found in the document using rules
     cur_sent_container = []
     anonymised_text, sen_data = anonymise_doc(fn, s, failed_docs, anonymis_inst, cur_sent_container, rule_group)
     sent_container += cur_sent_container
 
+    # Add the new entities to the list of regex in s2repls
+    # presumably so that anything found via a rule will also be
+    # found again anywhere else??
+    # XXX Not sure this is wise...
     for sd in cur_sent_container:
         if len(sd['sent']) > 3:
             s2repls.append(sd['sent'])
+
     # Look for all sensitive phrases/words in anonymised_text
     # and append to sent_container
     for v in s2repls:
