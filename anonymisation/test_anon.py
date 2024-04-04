@@ -75,7 +75,7 @@ if __name__ == '__main__':
     if len(sys.argv)>1:
         doc = sys.argv[1]
         if doc == '-v':
-            doc = sys.argv[1]
+            doc = sys.argv[2]
             verbose = True
         if os.path.isfile(doc):
             anon_doc, anon_phi = anon_file(doc)
