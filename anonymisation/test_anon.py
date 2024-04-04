@@ -62,6 +62,9 @@ def anon_doc(doc):
         #os.system("cat %s/out/extracted_phi.json" % tmpdirname)
         with open('%s/out/doc.txt' % tmpdirname) as fd:
             ret = fd.read()
+        for item in phi:
+            ret = ret[:item['start']] + 'Z'.rjust(len(item['sent']),'Z') + ret[item['start']+len(item['sent']):]
+
         return ret, phi
 
 def unescape_str(doc):
