@@ -4,7 +4,7 @@
   "rules_folder": "./conf/rules/",
   "rule_file_pattern": ".*_rules.json$",
   "rule_group_name": "PHI_rules",
-  "working_fields": ["Finding", "Text", "ContentSequence"],
+  "working_fields": ["Finding", "Text", "ContentSequence", "ImageComments"],
   "sensitive_fields": ["Patient ID", "Patient Name", "Person Observer Name",
     "Referring Physician Name", "Consulting Physician Name", "Performing Physician Name",
     "Name Of Physicians Reading Study",
