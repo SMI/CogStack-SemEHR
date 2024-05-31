@@ -124,10 +124,12 @@ def wrap_anonymise_doc_by_file(fn, folder, rule_group, anonymised_folder, failed
     for t in f_t_tuples:
         s += '[[%s]]\n%s' % (t[0], t[1])
     if len(s) == 0:
-        s = text
+        # No text fields found, continue but write empty output and xml
+        pass
+        #s = text
         # let's do nothing if no text fields were found
         # XXX make this an option
-        return
+        #return
     s = s.replace('\r', ' ')
     # Collect all sensitive phrases, and
     # split into sensitive words for words >= 4 chars long
