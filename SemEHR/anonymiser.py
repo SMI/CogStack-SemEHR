@@ -101,7 +101,7 @@ def anonymise_doc(doc_id, text, failed_docs, anonymis_inst, sent_container, rule
                 # 'x' * len(d['attrs']['name']))
             sent_container.append({'doc': doc_id, 'pos':d['pos'][0], 'start':start, 'type': d['type'], 'sent': d['attrs']['name'], 'rule': d['rule']})
         if 'number' in d['attrs']:
-            logger.debug('removing %s ' % d['attrs']['number'])
+            logger.debug('removing %s [%s] [%s]' % (d['attrs']['number'], d['type'], d['rule']))
             # XXX should we change 'start' in the same way as for 'name' above?
             if is_valid_place_holder(d['attrs']['number']):
                 anonymised_text = ExtractRule.do_replace(anonymised_text, d['pos'][0], d['attrs']['number'])
