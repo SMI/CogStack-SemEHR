@@ -56,10 +56,10 @@
         "data_type": "phone"
       },
       {
-        "comment": "phone number 0XXXX XXXXXXX spaces optional",
-        "test_true":  [ "01234 567890", "01234567890", "x 01234 567890 y" ],
+        "comment": "phone number 0XXXX XXXXXXX spaces optional. No preceding dot allowed so UIDs won't match.",
+        "test_true":  [ "01234 567890", "01234567890", "x 01234 567890 y", "xx 01234 567890", "01234567890." ],
         "test_false": [ "901234567890", "901234 5678909", "x01234567890y", ".01234567890." ],
-        "pattern": "\\b(0\\d{4}[ -]{0,}\\d{6})(?![\\.0-9])\\b",
+        "pattern": "(?<![\\.0-9A-Za-z])(0\\d{4}[ -]{0,}\\d{6})\\b",
         "flags": [
           "multiline",
           "ignorecase"
@@ -70,8 +70,10 @@
         "data_type": "phone"
       },
       {
-        "comment": "phone number XXXX XXX XXXX spaces optional",
-        "pattern": "(\\d{4}[ -]{0,}\\d{3}[ -]{0,}\\d{4})",
+        "comment": "phone number XXXX XXX XXXX spaces optional. No preceding dot allowed so UIDs won't match",
+        "test_true":  [ "x 0141 234 5678 y", "\n0141-2345678." ],
+        "test_false": [ ".01412345678" ],
+        "pattern": "(?<![\\.0-9A-Za-z])(0\\d{3}[ -]{0,}\\d{3}[ -]{0,}\\d{4})\\b",
         "flags": [
           "multiline",
           "ignorecase"
@@ -83,7 +85,7 @@
       },
       {
         "comment": "phone with area code in brackets",
-        "pattern": "(\\(\\d+\\) {0,}\\d{2,}( |\\-){0,}\\d{2,})",
+        "pattern": "(\\(0\\d+\\) {0,}\\d{2,}( |\\-){0,}\\d{2,})",
         "flags": [
           "multiline",
           "ignorecase"
@@ -94,6 +96,7 @@
         "data_type": "phone"
       },
       {
+        "comment": "extension followed by digits and slashes",
         "pattern": "extension\\s+([\\d\\/]+)",
         "flags": [
           "ignorecase"
@@ -105,7 +108,9 @@
       },
       {
         "comment": "exactly 11 digits starting with 07, no spaces (mobile)",
-        "pattern": "\\b(07\\d{9})\\b",
+        "test_true":  [ "07890123456" ],
+        "test_false": [ "3.07012345678" ],
+        "pattern": "(?<![\\.0-9A-Za-z])(07\\d{9})\\b",
         "flags": [
           "ignorecase"
         ],
@@ -116,7 +121,9 @@
       },
       {
         "comment": "exactly 11 digits starting with 01, no spaces (landline)",
-        "pattern": "\\b(01\\d{9})\\b",
+        "test_true":  [ "01234567890" ],
+        "test_false": [ "3.01234567890" ],
+        "pattern": "(?<![\\.0-9A-Za-z])(01\\d{9})\\b",
         "flags": [
           "ignorecase"
         ],
@@ -137,6 +144,7 @@
         "data_type": "phone"
       },
       {
+        "comment": "any string of digits (with any spaces) on a line by itself",
         "pattern": "^\\s{0,}(\\d[\\d\\s]+)\\Z",
         "flags": [
           "ignorecase",
