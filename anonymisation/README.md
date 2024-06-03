@@ -71,6 +71,9 @@ The rule file format is like this:
   "PHI_rules": {
     "clinic": [
       {
+        "comment": "A full description of this rule in plain English.",
+        "test_true": [ "list of strings which the pattern must match", "more" ],
+        "test_false": [ "list of strings which the pattern must not match", "more" ],
         "pattern": "\\bplease\\s+contact(\\s+\\w+(\\s+\\w+){0,2})",
         "flags": [ "ignorecase" ],
         "data_labels": [ "name" ],
@@ -79,19 +82,28 @@ The rule file format is like this:
 ```
 
 The pattern is a python regex but note that as it's in JSON it needs a
-double backslash. The flags can be `ignorecase` and/or `multiline` and
-have the same meaning as described in the Python documentation. The
-`data_labels` and `data_type` are simply used for labelling. There should
-be a data_label for each regex pattern group because each matching part
+double backslash so things like `\b` for boundary should be written `\\b`.
+The flags can be `ignorecase` and/or `multiline` and
+have the same meaning as described in the Python documentation.
+The `data_labels` and `data_type` are simply used for labelling.
+There should be a data_label for each regex pattern group because each matching part
 can be made available via the named label.
+The comment is optional but should be used to describe the rule.
+The tests are optional but should be used to allow automated testing of rules,
+using the `test_rules.py` script. All strings in the `test_true` list should
+contain something which matches the pattern and all strings in the `test_false` list
+should contain something that is not matched by the pattern.
 
 Regex tip: `(?:[^\d]|\b)` can be used either side of a number regex
 because it matches either non-digit or boundary (which handles start/end of
 line/file).
 
+Regex tip: `(?<![\\.0-9A-Za-z])XX` will ensure that the XX is not preceded
+by a dot, a digit or a letter.
+
 The `test_rules.py` program can be used to test a string against the rules.
 It also tests some basic properties of the rules: that the regex is valid,
-and that all labels have a matching regex group.
+that the tests all pass, and that all labels have a matching regex group.
 
 For more details see the `structuredreports` repo.
 
