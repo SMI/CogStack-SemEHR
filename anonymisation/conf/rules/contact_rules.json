@@ -56,8 +56,10 @@
         "data_type": "phone"
       },
       {
-        "comment": "phone number XXXXX XXXXXXX spaces optional",
-        "pattern": "(\\d{5}[ -]{0,}\\d{6})",
+        "comment": "phone number 0XXXX XXXXXXX spaces optional",
+        "test_true":  [ "01234 567890", "01234567890", "x 01234 567890 y" ],
+        "test_false": [ "901234567890", "901234 5678909", "x01234567890y", ".01234567890." ],
+        "pattern": "\\b(0\\d{4}[ -]{0,}\\d{6})(?![\\.0-9])\\b",
         "flags": [
           "multiline",
           "ignorecase"
