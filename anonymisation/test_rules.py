@@ -98,7 +98,20 @@ for file in glob.glob('conf/rules/*.json'):
                     if p.groups != len(rule['data_labels']):
                         err = 'WARN' if p.groups > len(rule['data_labels']) else 'ERROR'
                         print('%s %d labels (%s) but %d groups in %s' % (err, len(rule['data_labels']), ','.join(rule['data_labels']), p.groups, rule['pattern']))
-                    # Test all matches
+                    # Use the built-in tests
+                    if 'test_true' in rule:
+                        for ruletest in rule['test_true']:
+                            m = p.findall(ruletest)
+                            if not m:
+                                print('ERROR - rule did not match text "%s" - pattern is %s - %s' % (ruletest, rule['pattern'], rule.get('comment','(no comment)')))
+                                sys.exit(1)
+                    if 'test_false' in rule:
+                        for ruletest in rule['test_false']:
+                            m = p.findall(ruletest)
+                            if m:
+                                print('ERROR - rule incorrectly matched "%s" - pattern is %s - %s' % (ruletest, rule['pattern'], rule.get('comment','(no comment)')))
+                                sys.exit(1)
+                    # Test all matches with the given text
                     for match in p.finditer(text):
                         if text == sample_text:
                             if match.group(0) in sample_PII:

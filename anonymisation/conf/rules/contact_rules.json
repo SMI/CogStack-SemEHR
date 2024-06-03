@@ -3,6 +3,9 @@
 
     "phone": [
       {
+        "comment": "telephone followed by optional dot colon space then 2 or more digits then optional space or dash then possibly repeated",
+        "test_true":  [ "Telephone: 0141 234-5678" ],
+        "test_false": [ "tel no out of order" ],
         "pattern": " {0,}(telephone|phone|tel no|Fax No|Fax number|Appointments|Facsimile|fax|tel|bleep)\\.{0,1}\\s{0,1}\\:{0,1}\\s+((\\d{2,}( |\\-){0,1}){1,}).*",
         "flags": [
           "ignorecase"
@@ -14,6 +17,9 @@
         "data_type": "phone"
       },
       {
+        "comment": "tel followed without spaces by a string of digits, e.g. tel01412345678",
+        "test_true":  [ " Tel01412345678 " ],
+        "test_false": [ " tell123 ", " tel 01234567890 "],
         "pattern": "tel(\\d+)",
         "flags": [
           "ignorecase"
@@ -24,6 +30,9 @@
         "data_type": "phone"
       },
       {
+        "comment": "bleep or pager followed by a string not just digits",
+        "test_true":  [ "pager 12345", "pager: 12345", "paged Dr Jones" ],
+        "test_false": [ "pager : 12345" ],
         "pattern": "(?:bleep|paged|pager)(?:\\:){0,1}\\s+(\\w+)",
         "flags": [
           "ignorecase"
