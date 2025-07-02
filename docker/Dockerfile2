@@ -1,0 +1,29 @@
+FROM ubuntu:24.04
+LABEL Maintainer="howff"
+# nginx and python are required, libre2 is for pyre2
+# pyre2 has no wheel so need to build from source
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y nginx git python3-pip python3-venv python3-dev libre2-dev vim sudo \
+ build-essential cmake ninja-build cython3 pybind11-dev 
+# Clone the source code repos
+RUN git clone https://github.com/SMI/CogStack-SemEHR
+RUN git clone https://github.com/SMI/StructuredReports
+# Create a virtual environment
+RUN python3 -m venv /venv
+# Install dependencies
+RUN /venv/bin/python3 -m pip install setuptools wheel urllib3 joblib psycopg2_binary pymongo pyyaml mysql_connector_python pyre2 pydicom pika deepmerge
+# Build and install our SmiServices library
+RUN cd /StructuredReports/src/library && /venv/bin/python3 ./setup.py install
+# Create a self-signed certificate for nginx
+RUN sudo openssl req -x509 -nodes -days 7300 -newkey rsa:2048 \
+ -subj "/C=GB/ST=Scotland/L=Edinburgh/O=The University of Edinburgh/OU=EPCC/CN=10.0.2.135" \
+ -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt
+# Enable our nginx configuration
+RUN cp /CogStack-SemEHR/nginx.conf /etc/nginx/sites-available/semehr
+RUN ln -sf ../sites-available/semehr /etc/nginx/sites-enabled/semehr && rm -f /etc/nginx/sites-enabled/default
+# Copy our edited config file
+COPY settings.json /CogStack-SemEHR/RESTful_service/conf/settings.json
+# When the container runs it starts nginx on port 8485 and the web service on port 8080
+CMD service nginx start && \
+ cd /CogStack-SemEHR/RESTful_service && \
+ /venv/bin/python3 webserver.py -p 8080
