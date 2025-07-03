@@ -229,6 +229,7 @@ class PostgresDocAnn(DocAnn):
     def __init__(self, conf):
         super().__init__()
         self._host = conf['host']
+        self._port = conf['port']
         self._user = conf['user']
         self._pwd = conf['password']
         self._db = conf['db']
@@ -250,7 +251,7 @@ class PostgresDocAnn(DocAnn):
         Sets self._has_cuisop to True if the "cui_sop" table exists.
         """
         logging.info('Connecting to postgresql')
-        self._pgConnection = psycopg2.connect(host=self._host, user=self._user, password=self._pwd, dbname=self._db)
+        self._pgConnection = psycopg2.connect(host=self._host, port=self._port, user=self._user, password=self._pwd, dbname=self._db)
         # Set the schema name so it doesn't need to be specified before each table name
         self._pgConnection.cursor().execute(sql.SQL("SET search_path TO {},public").format(sql.Identifier(self._schema)))
         self._pgConnection.commit()
