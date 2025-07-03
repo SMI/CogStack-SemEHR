@@ -50,6 +50,7 @@ class UMLSmap:
                 settings = settings['postgreSQL']
             self._csv_dir = settings.get('umls_csv_dir', self._csv_dir)
             self._host = settings['host']
+            self._port = settings['port']
             self._user = settings['user']
             self._pwd = settings['password']
             self._db = settings['db']
@@ -66,7 +67,7 @@ class UMLSmap:
         Connection parameters must already have been set in the constructor.
         """
         try:
-            self._pgConnection = psycopg2.connect(host=self._host, user=self._user, password=self._pwd, dbname=self._db)
+            self._pgConnection = psycopg2.connect(host=self._host, port=self._port, user=self._user, password=self._pwd, dbname=self._db)
         except:
             logging.warning("cannot connect to postgresql, will try using local CSV files instead")
             logging.warning(sys.exc_info()[1]) # error message

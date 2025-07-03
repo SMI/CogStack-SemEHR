@@ -22,6 +22,7 @@
   },
   "postgreSQL": {
     "host": "localhost",
+    "port": 5432,
     "user": "semehrapi",
     "password": "@awnwge@",
     "db": "semehr",
