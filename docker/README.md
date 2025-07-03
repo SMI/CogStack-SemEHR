@@ -21,17 +21,23 @@ docker run --rm -it --entrypoint /bin/bash psqlclient
 and
 `StructuredReports/src/tools/postgres_init_01.sh`
 
-* Build the SemEHR docker image. First copy the config file `CogStack-SemEHR/RESTful_service/conf/settings.json` into this directory and edit the postgres server settings then
+* Copy the config file `CogStack-SemEHR/RESTful_service/conf/settings.json` into this directory and edit the postgres server settings
+  - edit the postgres server settings (hostname, port)
+  - remove the `umls_csv_dir` entry (because all data should be in database)
+
+* Build the SemEHR docker image:
 ```
+# Add this to pull fresh github repos: --build-arg GIT_DATE=$(date +%N)
 docker build -t howff/semehr:2 -f Dockerfile2 --progress=plain .
 ```
 
 * Run SemEHR:
 ```
-docker run  -d -p 8485:8485 howff/semehr:2b
+# Remove the --rm if you need to inspect the logs after the container exits
+docker run --rm -d --name semehr -p 8485:8485 howff/semehr:2
 ```
 
-* Test that SemEHR is running
+* Test that SemEHR is running:
 ```
 curl -k https://localhost:8485/vis/
 ```
@@ -58,3 +64,9 @@ export SMI_LOGS_ROOT=/tmp
  --pg-host localhost --pg-port 54320 --pg-user semehr --pg-pass semehr \
  -t mtsamples_ihi_docs -j mtsamples_ihi_semehr_results -m mtsamples_ihi_meta
 ```
+
+* Test the web page
+  - visit http://localhost:8485/vis/
+  - enter the passphrase as given in settings.json (the passphrase, not the postgres password)
+  - enter the query `C1273517` and search
+
